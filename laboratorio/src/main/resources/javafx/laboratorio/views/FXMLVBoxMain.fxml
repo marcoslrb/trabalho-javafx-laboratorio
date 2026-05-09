@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLVBoxMainController">
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="Cadastros">
+            <items>
+              <MenuItem fx:id="menuItemCadastrosPesquisadores" mnemonicParsing="false" onAction="#handleMenuItemCadastrosPesquisadores" text="Pesquisadores" />
+              <MenuItem fx:id="menuItemCadastrosLaboratorios" mnemonicParsing="false" onAction="#handleMenuItemCadastrosLaboratorios" text="Laboratórios" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Processos">
+            <items>
+              <MenuItem fx:id="menuItemProcessosReservas" mnemonicParsing="false" onAction="#handleMenuItemProcessosReservas" text="Reservas" />
+              <MenuItem fx:id="menuItemProcessosManutencoes" mnemonicParsing="false" onAction="#handleMenuItemProcessosManutencoes" text="Pedidos de Manutenção" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Gráficos">
+             <items>
+                <MenuItem fx:id="menuItemGraficosConfiabilidade" mnemonicParsing="false" onAction="#handleMenuItemGraficosConfiabilidade" text="Índice de Confiabilidade (Falhas)" />
+             </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Relatórios">
+             <items>
+              <MenuItem fx:id="menuItemRelatoriosOcupacao" mnemonicParsing="false" onAction="#handleMenuItemRelatoriosOcupacao" text="Extrato de Ocupação por Pesquisador" />
+              <MenuItem fx:id="menuItemRelatoriosIncidentes" mnemonicParsing="false" onAction="#handleMenuItemRelatoriosIncidentes" text="Log de Incidentes em Reservas" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <AnchorPane fx:id="anchorPane" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>

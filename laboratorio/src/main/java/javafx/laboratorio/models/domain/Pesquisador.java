@@ -2,10 +2,6 @@ package javafx.laboratorio.models.domain;
 
 import java.io.Serializable;
 
-/**
- * Entidade que representa o Pesquisador no sistema de laboratórios.
- * Atende aos requisitos de Matrícula, Nome, Email, CPF e Telefone.
- */
 public class Pesquisador implements Serializable {
 
     private String matricula; // PK
@@ -13,12 +9,11 @@ public class Pesquisador implements Serializable {
     private String email;     // NOT NULL, UNIQUE
     private String cpf;       // NOT NULL, UNIQUE
     private String telefone;  // UNIQUE, NULL
+    private boolean suspenso; // NOT NULL
 
-    // Construtor padrão (necessário para alguns frameworks e flexibilidade)
     public Pesquisador() {
     }
 
-    // Construtor completo para facilitar a criação via Controller ou DAO
     public Pesquisador(String matricula, String nome, String email, String cpf, String telefone) {
         this.matricula = matricula;
         this.nome = nome;
@@ -27,7 +22,6 @@ public class Pesquisador implements Serializable {
         this.telefone = telefone;
     }
 
-    // Getters e Setters
     public String getMatricula() {
         return matricula;
     }
@@ -67,8 +61,15 @@ public class Pesquisador implements Serializable {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+    
+    public boolean isSuspenso() {
+    return suspenso;
+    }
 
-    // toString útil para depuração e para exibir o nome em ComboBoxes do JavaFX
+    public void setSuspenso(boolean suspenso) {
+        this.suspenso = suspenso;
+    }
+
     @Override
     public String toString() {
         return this.nome;
