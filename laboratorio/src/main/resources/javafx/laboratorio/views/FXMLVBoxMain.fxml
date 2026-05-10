@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLVBoxMainController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLVBoxMainController">
    <children>
       <MenuBar>
         <menus>
@@ -32,6 +37,41 @@
           </Menu>
         </menus>
       </MenuBar>
-      <AnchorPane fx:id="anchorPane" VBox.vgrow="ALWAYS" />
+      <AnchorPane fx:id="anchorPane" VBox.vgrow="ALWAYS">
+         <children>
+            <Text layoutX="274.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="IFES - Campus Cachoeiro de Itapemirim">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Text>
+            <Text layoutX="385.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="2026" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Text>
+            <Text layoutX="165.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sistema de Gerenciamento de Laboratórios" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold Italic" size="23.0" />
+               </font>
+            </Text>
+            <Text layoutX="325.0" layoutY="259.0" strokeType="OUTSIDE" strokeWidth="0.0" text="André Mendonça Valane" />
+            <Text layoutX="334.0" layoutY="283.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Marcos Lopes Ribeiro" />
+            <Text layoutX="75.0" layoutY="449.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Disciplina de POO II">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Text>
+            <Text layoutX="75.0" layoutY="470.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Prof. Rafael Vargas Mesquita">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text layoutX="75.0" layoutY="524.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bacharelado em Sistemas de Informação">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text layoutX="761.0" layoutY="555.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v1.0" />
+         </children></AnchorPane>
    </children>
 </VBox>

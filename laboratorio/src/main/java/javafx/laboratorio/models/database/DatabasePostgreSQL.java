@@ -26,7 +26,9 @@ public class DatabasePostgreSQL implements Database {
     @Override
     public void desconectar(Connection conn) {
         try {
-            conn.close();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DatabasePostgreSQL.class.getName()).log(Level.SEVERE, null, ex);
         }

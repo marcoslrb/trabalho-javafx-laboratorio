@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<!--
+    Tela de Cadastro de Laboratórios
+    Estrutura: SplitPane (esquerda = TableView | direita = Detalhes + Botões)
+    Segue o mesmo padrão visual da tela de Pesquisadores.
+-->
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneCadastrosLaboratoriosController">
+   <children>
+      <SplitPane dividerPositions="0.4" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+
+          <!-- LADO ESQUERDO: TableView com lista de laboratórios -->
+          <AnchorPane minHeight="0.0" minWidth="0.0">
+               <children>
+                  <TableView fx:id="tableViewLaboratorios" prefHeight="400.0" prefWidth="236.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <!-- Coluna ID (pequena) -->
+                      <TableColumn fx:id="tableColumnLaboratorioId" prefWidth="40.0" text="ID" />
+                      <!-- Coluna Nome (maior) -->
+                      <TableColumn fx:id="tableColumnLaboratorioNome" prefWidth="120.0" text="Nome" />
+                      <!-- Coluna Área -->
+                      <TableColumn fx:id="tableColumnLaboratorioArea" prefWidth="76.0" text="Área" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+            </AnchorPane>
+
+          <!-- LADO DIREITO: Detalhes + Botões -->
+          <AnchorPane minHeight="0.0" minWidth="0.0">
+               <children>
+
+                  <!-- Título -->
+                  <Label layoutX="87.0" layoutY="14.0" text="Detalhes do Laboratório">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
+
+                  <!-- Grid com os campos de detalhe -->
+                  <GridPane layoutX="20.0" layoutY="50.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="200.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <!-- Rótulos (coluna 0) -->
+                        <Label text="ID:" />
+                        <Label text="Nome:" GridPane.rowIndex="1" />
+                        <Label text="Área:" GridPane.rowIndex="2" />
+                        <Label text="Descrição:" GridPane.rowIndex="3" />
+                        <Label text="Status:" GridPane.rowIndex="4" />
+
+                        <!-- Valores dinâmicos (coluna 1) -->
+                        <Label fx:id="labelLaboratorioId" GridPane.columnIndex="1" />
+                        <Label fx:id="labelLaboratorioNome" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="labelLaboratorioArea" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="labelLaboratorioDescricao" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label fx:id="labelLaboratorioFuncional" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                     </children>
+                  </GridPane>
+
+                  <!-- Botões de ação: Inserir | Alterar | Remover -->
+                  <HBox layoutX="20.0" spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                     <children>
+                        <Button fx:id="buttonInserir" mnemonicParsing="false" onAction="#handleButtonInserir" prefWidth="85.0" text="Inserir" />
+                        <Button fx:id="buttonAlterar" mnemonicParsing="false" onAction="#handleButtonAlterar" prefWidth="85.0" text="Alterar" />
+                        <Button fx:id="buttonRemover" mnemonicParsing="false" onAction="#handleButtonRemover" prefWidth="85.0" text="Remover" />
+                     </children>
+                  </HBox>
+
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<!--
+    Dialog de Cadastro/Edição de Laboratório.
+    Abre como janela modal sobre a tela principal.
+    Campos: Nome, Área, Descrição (TextArea), Funcional (CheckBox)
+-->
+
+<AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneCadastrosLaboratoriosDialogController">
+   <children>
+
+      <!-- Título do dialog -->
+      <Label layoutX="114.0" layoutY="14.0" text="Dados do Laboratório">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+
+      <!-- Grid com os campos de entrada -->
+      <GridPane layoutX="20.0" layoutY="50.0" prefWidth="360.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <columnConstraints>
+          <!-- Coluna dos rótulos -->
+          <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="90.0" />
+          <!-- Coluna dos campos de entrada -->
+          <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="270.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <!-- Linha 0: Nome -->
+            <Label text="Nome:" GridPane.valignment="CENTER" />
+            <TextField fx:id="textFieldNome" promptText="Ex: Lab. de Informática A" GridPane.columnIndex="1" />
+
+            <!-- Linha 1: Área -->
+            <Label text="Área:" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <TextField fx:id="textFieldArea" promptText="Ex: Computação" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <!-- Linha 2: Descrição (TextArea pois pode ser longa) -->
+            <Label text="Descrição:" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+            <TextArea fx:id="textAreaDescricao" promptText="Descrição opcional (máx. 300 caracteres)" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <!-- Linha 3: Funcional (CheckBox) -->
+            <Label text="Funcional:" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <CheckBox fx:id="checkBoxFuncional" text="Laboratório em funcionamento" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+         </children>
+      </GridPane>
+
+      <!-- Botões Confirmar e Cancelar -->
+      <HBox layoutX="20.0" spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="20.0">
+         <children>
+            <Button fx:id="buttonConfirmar" mnemonicParsing="false" onAction="#handleButtonConfirmar" prefWidth="100.0" text="Confirmar" />
+            <Button fx:id="buttonCancelar" mnemonicParsing="false" onAction="#handleButtonCancelar" prefWidth="100.0" text="Cancelar" />
+         </children>
+      </HBox>
+
+   </children>
+</AnchorPane>
