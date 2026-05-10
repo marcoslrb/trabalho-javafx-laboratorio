@@ -176,13 +176,43 @@ public class PedidoManutencaoDAO {
     }
 
     // =========================================================
+    // BUSCAR POR ID
+    // =========================================================
+    /**
+     * Busca um pedido de manutenção pelo seu ID.
+     */
+    public PedidoManutencao buscarPorId(int idPedido) {
+        String sql = "SELECT pm.id, pm.hora_pedido, pm.descricao, pm.status_resolvido, "
+                   + "r.id AS id_reserva, r.data_inicio, r.data_fim, r.matricula_pesquisador, "
+                   + "p.nome AS nome_pesquisador, "
+                   + "l.id AS id_lab, l.nome AS nome_lab, l.area, l.descricao AS desc_lab, l.funcional "
+                   + "FROM pedido_manutencao pm "
+                   + "JOIN reserva r ON pm.id_reserva = r.id "
+                   + "JOIN pesquisador p ON r.matricula_pesquisador = p.matricula "
+                   + "JOIN laboratorio l ON r.id_laboratorio = l.id "
+                   + "WHERE pm.id = ?";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, idPedido);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapearResultSet(rs);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erro ao buscar pedido por ID: " + ex.getMessage());
+        }
+        return null;
+    }
+
+    // =========================================================
     // ATUALIZAR STATUS DO PEDIDO
     // =========================================================
     /**
      * Marca um pedido de manutenção como resolvido (status_resolvido = TRUE).
+     * Só atualiza se o pedido ainda estiver pendente (status_resolvido = FALSE).
      */
     public boolean marcarComoResolvido(int idPedido) {
-        String sql = "UPDATE pedido_manutencao SET status_resolvido = TRUE WHERE id = ?";
+        String sql = "UPDATE pedido_manutencao SET status_resolvido = TRUE WHERE id = ? AND status_resolvido = FALSE";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, idPedido);

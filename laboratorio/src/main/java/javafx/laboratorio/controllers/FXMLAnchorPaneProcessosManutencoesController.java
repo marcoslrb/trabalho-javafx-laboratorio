@@ -118,9 +118,10 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         tableViewPedidos.getSelectionModel().selectedItemProperty().addListener(
                 (obs, old, novo) -> {
                     boolean temSelecao = novo != null;
-                    buttonMarcarResolvido.setDisable(!temSelecao);
                     buttonAlterarPedido.setDisable(!temSelecao);
                     buttonRemoverPedido.setDisable(!temSelecao);
+                    // Desabilita "Marcar Resolvido" se já estiver resolvido
+                    buttonMarcarResolvido.setDisable(!temSelecao || novo.isStatusResolvido());
                 });
     }
 
@@ -246,11 +247,17 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
     public void handleButtonMarcarResolvido() {
         PedidoManutencao pedidoSelecionado = tableViewPedidos.getSelectionModel().getSelectedItem();
         if (pedidoSelecionado != null) {
-            boolean ok = pedidoService.marcarComoResolvido(pedidoSelecionado.getId());
-            if (ok) {
+            // Validação de estado redundante por segurança
+            if (pedidoSelecionado.isStatusResolvido()) {
+                exibirAlertaErro("Operação inválida", "Este pedido já está marcado como resolvido.");
+                return;
+            }
+
+            String msg = pedidoService.marcarComoResolvido(pedidoSelecionado.getId());
+            if ("SUCESSO".equals(msg)) {
                 carregarTableViewPedidos();
             } else {
-                exibirAlertaErro("Erro", "Não foi possível marcar o pedido como resolvido.");
+                exibirAlertaErro("Erro", msg);
             }
         }
     }
@@ -305,9 +312,28 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
 
         java.util.Optional<Boolean> resultado = dialog.showAndWait();
         if (resultado.isPresent() && resultado.get()) {
-            pedidoSelecionado.setDescricao(taDescricao.getText().trim());
-            pedidoSelecionado.setStatusResolvido(cbResolvido.isSelected());
+            String novaDescricao = taDescricao.getText().trim();
+            boolean novoStatus = cbResolvido.isSelected();
 
+            // Validações de campo no Controller
+            if (novaDescricao.isEmpty()) {
+                exibirAlertaErro("Validação", "A descrição não pode ser vazia.");
+                return;
+            }
+            if (novaDescricao.length() > 500) {
+                exibirAlertaErro("Validação", "A descrição deve ter no máximo 500 caracteres.");
+                return;
+            }
+
+            // Evita operação redundante se nada mudou
+            if (novaDescricao.equals(pedidoSelecionado.getDescricao()) && 
+                novoStatus == pedidoSelecionado.isStatusResolvido()) {
+                return;
+            }
+
+            pedidoSelecionado.setDescricao(novaDescricao);
+            pedidoSelecionado.setStatusResolvido(novoStatus);
+ 
             String msg = pedidoService.alterar(pedidoSelecionado);
             if ("SUCESSO".equals(msg)) {
                 carregarTableViewPedidos();
@@ -329,15 +355,17 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacao.setTitle("Confirmar Remoção");
         confirmacao.setHeaderText("Remover Pedido #" + pedidoSelecionado.getId());
-        confirmacao.setContentText("Tem certeza que deseja remover este pedido de manutenção? Esta ação não pode ser desfeita.");
-
+        
+        String statusStr = pedidoSelecionado.isStatusResolvido() ? "RESOLVIDO" : "PENDENTE";
+        confirmacao.setContentText("Tem certeza que deseja remover este pedido de manutenção (" + statusStr + ")? Esta ação não pode ser desfeita.");
+ 
         java.util.Optional<javafx.scene.control.ButtonType> resposta = confirmacao.showAndWait();
         if (resposta.isPresent() && resposta.get() == javafx.scene.control.ButtonType.OK) {
-            boolean ok = pedidoService.remover(pedidoSelecionado.getId());
-            if (ok) {
+            String msg = pedidoService.remover(pedidoSelecionado.getId());
+            if ("SUCESSO".equals(msg)) {
                 carregarTableViewPedidos();
             } else {
-                exibirAlertaErro("Erro ao remover", "Não foi possível remover o pedido selecionado.");
+                exibirAlertaErro("Erro ao remover", msg);
             }
         }
     }

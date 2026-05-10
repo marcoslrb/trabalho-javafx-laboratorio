@@ -14,9 +14,9 @@ import javafx.laboratorio.models.domain.Laboratorio;
  * mantendo os Controllers enxutos.
  *
  * Validações implementadas:
- *   - Nome não pode ser vazio e deve ter no máximo 100 caracteres
- *   - Área não pode ser vazia e deve ter no máximo 50 caracteres
- *   - Descrição é opcional, mas se informada, máximo 300 caracteres
+ * - Nome não pode ser vazio e deve ter no máximo 100 caracteres
+ * - Área não pode ser vazia e deve ter no máximo 50 caracteres
+ * - Descrição é opcional, mas se informada, máximo 300 caracteres
  */
 public class LaboratorioService {
 
@@ -29,7 +29,8 @@ public class LaboratorioService {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
         if (connection == null) {
-            throw new RuntimeException("Não foi possível conectar ao banco de dados. Verifique as configurações em DatabasePostgreSQL.java.");
+            throw new RuntimeException(
+                    "Não foi possível conectar ao banco de dados. Verifique as configurações em DatabasePostgreSQL.java.");
         }
         laboratorioDAO.setConnection(connection);
         try {
@@ -47,7 +48,8 @@ public class LaboratorioService {
      */
     public String inserir(Laboratorio laboratorio) {
         String erro = validar(laboratorio);
-        if (erro != null) return erro;
+        if (erro != null)
+            return erro;
 
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -68,7 +70,8 @@ public class LaboratorioService {
     // =========================================================
     public String alterar(Laboratorio laboratorio) {
         String erro = validar(laboratorio);
-        if (erro != null) return erro;
+        if (erro != null)
+            return erro;
 
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -91,7 +94,8 @@ public class LaboratorioService {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
         if (connection == null) {
-            throw new RuntimeException("Não foi possível conectar ao banco de dados. Verifique as configurações em DatabasePostgreSQL.java.");
+            throw new RuntimeException(
+                    "Não foi possível conectar ao banco de dados. Verifique as configurações em DatabasePostgreSQL.java.");
         }
         laboratorioDAO.setConnection(connection);
         try {
@@ -104,10 +108,6 @@ public class LaboratorioService {
     // =========================================================
     // VALIDAÇÕES de campos
     // =========================================================
-    /**
-     * Valida os campos do laboratório.
-     * @return null se tudo estiver OK, ou a mensagem de erro caso contrário.
-     */
     private String validar(Laboratorio lab) {
         if (lab.getNome() == null || lab.getNome().trim().isEmpty()) {
             return "ERRO: O nome do laboratório é obrigatório.";

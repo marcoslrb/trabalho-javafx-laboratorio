@@ -53,6 +53,9 @@ public class PedidoManutencaoService {
 
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
+        if (connection == null) {
+            throw new RuntimeException("Não foi possível conectar ao banco de dados. Verifique as configurações em DatabasePostgreSQL.java.");
+        }
 
         pesquisadorValidacaoDAO.setConnection(connection);
         pedidoManutencaoDAO.setConnection(connection);
@@ -152,6 +155,9 @@ public class PedidoManutencaoService {
     public List<PedidoManutencao> listarTodos() {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
+        if (connection == null) {
+            throw new RuntimeException("Não foi possível conectar ao banco de dados. Verifique as configurações em DatabasePostgreSQL.java.");
+        }
         pedidoManutencaoDAO.setConnection(connection);
         try {
             return pedidoManutencaoDAO.listar();
@@ -179,8 +185,16 @@ public class PedidoManutencaoService {
 
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
+        if (connection == null) {
+            return "ERRO: Não foi possível conectar ao banco de dados.";
+        }
         pedidoManutencaoDAO.setConnection(connection);
         try {
+            PedidoManutencao existente = pedidoManutencaoDAO.buscarPorId(pedido.getId());
+            if (existente == null) {
+                return "ERRO: Pedido não encontrado.";
+            }
+
             boolean ok = pedidoManutencaoDAO.alterar(pedido);
             return ok ? "SUCESSO" : "ERRO: Nenhum registro atualizado.";
         } finally {
@@ -191,12 +205,21 @@ public class PedidoManutencaoService {
     // =========================================================
     // REMOVER um pedido
     // =========================================================
-    public boolean remover(int idPedido) {
+    public String remover(int idPedido) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
+        if (connection == null) {
+            return "ERRO: Não foi possível conectar ao banco de dados.";
+        }
         pedidoManutencaoDAO.setConnection(connection);
         try {
-            return pedidoManutencaoDAO.remover(idPedido);
+            PedidoManutencao existente = pedidoManutencaoDAO.buscarPorId(idPedido);
+            if (existente == null) {
+                return "ERRO: Pedido não encontrado.";
+            }
+
+            boolean ok = pedidoManutencaoDAO.remover(idPedido);
+            return ok ? "SUCESSO" : "ERRO: Não foi possível remover o pedido.";
         } finally {
             database.desconectar(connection);
         }
@@ -205,12 +228,23 @@ public class PedidoManutencaoService {
     // =========================================================
     // MARCAR como resolvido (atalho rápido — botão na tabela)
     // =========================================================
-    public boolean marcarComoResolvido(int idPedido) {
+    public String marcarComoResolvido(int idPedido) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
+        if (connection == null) {
+            return "ERRO: Não foi possível conectar ao banco de dados.";
+        }
         pedidoManutencaoDAO.setConnection(connection);
         try {
-            return pedidoManutencaoDAO.marcarComoResolvido(idPedido);
+            PedidoManutencao pedido = pedidoManutencaoDAO.buscarPorId(idPedido);
+            if (pedido == null) {
+                return "ERRO: Pedido não encontrado.";
+            }
+            if (pedido.isStatusResolvido()) {
+                return "ERRO: O pedido já está resolvido.";
+            }
+ 
+            return pedidoManutencaoDAO.marcarComoResolvido(idPedido) ? "SUCESSO" : "ERRO: Não foi possível atualizar o pedido.";
         } finally {
             database.desconectar(connection);
         }
