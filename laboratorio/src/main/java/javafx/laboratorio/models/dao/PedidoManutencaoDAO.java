@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.laboratorio.models.domain.Laboratorio;
 import javafx.laboratorio.models.domain.PedidoManutencao;
 import javafx.laboratorio.models.domain.Pesquisador;
@@ -262,6 +264,34 @@ public class PedidoManutencaoDAO {
             System.err.println("Erro ao remover pedido de manutenção: " + ex.getMessage());
             return false;
         }
+    }
+
+    // =========================================================
+    // OBTER DADOS PARA GRÁFICO DE CONFIABILIDADE
+    // =========================================================
+    /**
+     * Busca a quantidade de pedidos de manutenção pendentes por laboratório.
+     * Retorna um Map onde a chave é o nome do laboratório e o valor é o total de falhas.
+     */
+    public Map<String, Integer> obterDadosGraficoConfiabilidade() {
+        String sql = "SELECT l.nome, COUNT(pm.id) AS total_falhas "
+                   + "FROM laboratorio l "
+                   + "JOIN reserva r ON r.id_laboratorio = l.id "
+                   + "JOIN pedido_manutencao pm ON pm.id_reserva = r.id "
+                   + "WHERE pm.status_resolvido = FALSE "
+                   + "GROUP BY l.nome "
+                   + "ORDER BY total_falhas DESC";
+        Map<String, Integer> retorno = new LinkedHashMap<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                retorno.put(rs.getString("nome"), rs.getInt("total_falhas"));
+            }
+        } catch (SQLException ex) {
+            System.err.println("Erro ao obter dados para gráfico: " + ex.getMessage());
+        }
+        return retorno;
     }
 
     // =========================================================

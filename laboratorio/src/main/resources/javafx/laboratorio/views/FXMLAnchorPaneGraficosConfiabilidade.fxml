@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneGraficosConfiabilidadeController">
+   <children>
+      <BarChart fx:id="barChart" layoutX="50.0" layoutY="14.0" prefHeight="370.0" prefWidth="500.0" title="Índice de Confiabilidade dos Laboratórios" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+        <xAxis>
+          <CategoryAxis fx:id="categoryAxis" label="Laboratórios" side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="numberAxis" label="Falhas" side="LEFT" />
+        </yAxis>
+      </BarChart>
+   </children>
+</AnchorPane>

@@ -39,24 +39,20 @@
             <!-- ======================================================= -->
             <!-- SEÇÃO DE FORMULÁRIO (parte superior)                     -->
             <!-- ======================================================= -->
-            <TitledPane animated="false" collapsible="false" prefHeight="235.0" text="Novo Pedido de Manutenção" VBox.vgrow="NEVER">
+            <TitledPane animated="false" collapsible="false" prefHeight="277.0" prefWidth="750.0" text="Novo Pedido de Manutenção" VBox.vgrow="NEVER">
                <content>
                   <GridPane hgap="10.0" style="-fx-padding: 10;" vgap="10.0">
                     <columnConstraints>
                       <!-- Coluna dos rótulos -->
-                      <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="120.0" />
-                      <!-- Coluna dos campos -->
-                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="350.0" />
-                      <!-- Coluna dos botões de validação -->
-                      <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="180.0" />
-                      <!-- Coluna dos labels de feedback -->
-                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="80.0" />
+                      <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
+                      <!-- Coluna dos campos + botões -->
+                      <ColumnConstraints hgrow="ALWAYS" maxWidth="616.0" minWidth="10.0" prefWidth="373.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <!-- Linha 0: Matrícula do Pesquisador -->
                       <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
                       <!-- Linha 1: Laboratório -->
-                      <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="45.0" prefHeight="55.0" vgrow="NEVER" />
                       <!-- Linha 2: Descrição -->
                       <RowConstraints minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
                       <!-- Linha 3: Botão Registrar -->
@@ -67,33 +63,38 @@
                         <!-- LINHA 0: PASSO 1 - Pesquisador -->
                         <Label text="Matrícula:" GridPane.valignment="CENTER" />
 
-                        <TextField fx:id="textFieldMatricula" promptText="Digite a matrícula (máx. 8 dígitos)" GridPane.columnIndex="1" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="573.0" spacing="10.0" GridPane.columnIndex="1">
+                           <children>
+                              <TextField fx:id="textFieldMatricula" minWidth="235.0" prefHeight="26.0" prefWidth="235.0" promptText="Digite a matrícula (máx. 8 dígitos)" />
 
-                        <!-- Botão de validação do pesquisador -->
-                        <Button fx:id="buttonValidarPesquisador" mnemonicParsing="false" onAction="#handleButtonValidarPesquisador" prefWidth="170.0" text="Validar Pesquisador" GridPane.columnIndex="2" />
+                              <Button fx:id="buttonValidarPesquisador" minWidth="155.0" mnemonicParsing="false" onAction="#handleButtonValidarPesquisador" prefHeight="26.0" prefWidth="155.0" text="Validar Pesquisador" />
 
-                        <!-- Feedback: nome do pesquisador encontrado -->
-                        <Label fx:id="labelNomePesquisador" text="" wrapText="true" GridPane.columnIndex="3" />
+                              <Label fx:id="labelNomePesquisador" HBox.hgrow="ALWAYS" maxHeight="Infinity" maxWidth="Infinity" text="" wrapText="true" />
+                           </children>
+                        </HBox>
 
                         <!-- LINHA 1: PASSO 2 - Laboratório -->
                         <Label text="Laboratório:" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
 
-                        <!-- ComboBox: exibe o toString() do Laboratorio (que é o nome) -->
-                        <ComboBox fx:id="comboBoxLaboratorio" prefHeight="26.0" prefWidth="188.0" promptText="Selecione o laboratório" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <children>
 
-                        <!-- Botão de verificação da reserva -->
-                        <Button fx:id="buttonVerificarReserva" mnemonicParsing="false" onAction="#handleButtonVerificarReserva" prefWidth="170.0" text="Verificar Reserva" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="comboBoxLaboratorio" minWidth="235.0" prefHeight="26.0" prefWidth="235.0" promptText="Selecione o laboratório" />
 
-                        <!-- Feedback: info da reserva encontrada -->
-                        <Label fx:id="labelInfoReserva" text="" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Button fx:id="buttonVerificarReserva" minWidth="155.0" mnemonicParsing="false" onAction="#handleButtonVerificarReserva" prefHeight="26.0" prefWidth="155.0" text="Verificar Reserva" />
+
+                              <Label fx:id="labelInfoReserva" HBox.hgrow="ALWAYS" maxHeight="Infinity" maxWidth="Infinity" text="" wrapText="true" />
+
+                           </children>
+                        </HBox>
 
                         <!-- LINHA 2: PASSO 3 - Descrição do problema -->
                         <Label text="Descrição:" GridPane.rowIndex="2" GridPane.valignment="TOP" />
 
-                        <TextArea fx:id="textAreaDescricao" promptText="Descreva o problema encontrado no laboratório (máx. 500 caracteres)" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+                        <TextArea fx:id="textAreaDescricao" promptText="Descreva o problema encontrado no laboratório (máx. 500 caracteres)" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                         <!-- LINHA 3: Botão principal -->
-                        <Button fx:id="buttonRegistrarPedido" mnemonicParsing="false" onAction="#handleButtonRegistrarPedido" prefWidth="250.0" style="-fx-font-weight: bold;" text="Registrar Pedido de Manutenção" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+                        <Button fx:id="buttonRegistrarPedido" mnemonicParsing="false" onAction="#handleButtonRegistrarPedido" prefWidth="250.0" style="-fx-font-weight: bold;" text="Registrar Pedido de Manutenção" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                      </children>
                   </GridPane>

@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -73,7 +72,10 @@ public class FXMLVBoxMainController implements Initializable {
         alterarTituloJanela("Pedido de Manutenção");
     }
     @FXML
-    public void handleMenuItemGraficosConfiabilidade() { System.out.println("Não implementado"); }
+    public void handleMenuItemGraficosConfiabilidade() throws IOException {
+        carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneGraficosConfiabilidade.fxml");
+        alterarTituloJanela("Gráfico de Confiabilidade");
+    }
     @FXML
     public void handleMenuItemRelatoriosOcupacao() { System.out.println("Não implementado"); }
     @FXML
