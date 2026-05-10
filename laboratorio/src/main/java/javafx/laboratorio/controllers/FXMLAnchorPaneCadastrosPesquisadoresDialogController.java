@@ -93,11 +93,14 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
             this.textFieldMatricula.setEditable(false);
             this.textFieldMatricula.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: #555555; -fx-cursor: not-allowed; -fx-focus-color: transparent;");
             this.textFieldMatricula.setTooltip(new Tooltip("A matrícula é a identidade do registro e não pode ser alterada."));
+            this.textFieldMatricula.setFocusTraversable(false);
             this.textFieldNome.setText(this.pesquisador.getNome());
             this.textFieldEmail.setText(this.pesquisador.getEmail());
             this.textFieldCPF.setText(this.pesquisador.getCpf());
             this.textFieldTelefone.setText(this.pesquisador.getTelefone());
             this.checkBoxSuspenso.setSelected(this.pesquisador.isSuspenso());
+            
+            javafx.application.Platform.runLater(() -> this.textFieldNome.requestFocus());
         }
     }
 
