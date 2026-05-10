@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class FXMLVBoxMainController implements Initializable {
 
@@ -49,25 +50,37 @@ public class FXMLVBoxMainController implements Initializable {
     }
 
     // --- MÉTODOS PARA CARREGAR OS ECRÃS --- //
+    
+    private void alterarTituloJanela(String subtitulo) {
+        if (anchorPane != null && anchorPane.getScene() != null) {
+            Stage stage = (Stage) anchorPane.getScene().getWindow();
+            if (stage != null) {
+                stage.setTitle("Sistema de Gerenciamento de Laboratórios - " + subtitulo);
+            }
+        }
+    }
+
     @FXML
     public void handleMenuItemCadastrosPesquisadores() throws IOException {
         carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneCadastrosPesquisadores.fxml");
+        alterarTituloJanela("Cadastro de Pesquisadores");
     }
 
     @FXML
     public void handleMenuItemProcessosReservas() throws IOException {
-        // AnchorPane a = (AnchorPane) FXMLLoader.load(getClass().getResource("/javafx/laboratorio/views/FXMLAnchorPaneProcessosReservas.fxml"));
-        // anchorPane.getChildren().setAll(a);
         System.out.println("Ecrã de Reservas será implementado em breve.");
     }
 
     @FXML
     public void handleMenuItemCadastrosLaboratorios() throws IOException {
         carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneCadastrosLaboratorios.fxml");
+        alterarTituloJanela("Cadastro de Laboratórios");
     }
+    
     @FXML
     public void handleMenuItemProcessosManutencoes() throws IOException {
         carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneProcessosManutencoes.fxml");
+        alterarTituloJanela("Pedido de Manutenção");
     }
     @FXML
     public void handleMenuItemGraficosConfiabilidade() { System.out.println("Não implementado"); }

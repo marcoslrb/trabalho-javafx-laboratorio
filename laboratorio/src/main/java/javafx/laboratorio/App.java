@@ -18,6 +18,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("views/FXMLVBoxMain"), 800, 600);
+        stage.setTitle("Sistema de Gerenciamento de Laboratórios");
         stage.setScene(scene);
         stage.show();
     }
