@@ -17,6 +17,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.laboratorio.models.domain.Laboratorio;
 import javafx.laboratorio.models.domain.PedidoManutencao;
@@ -97,6 +99,17 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Validação em tempo real: Matrícula (Máx 8 caracteres)
+        textFieldMatricula.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 8 ? change : null));
+        textFieldMatricula.setPromptText("Máx. 8 caracteres");
+        textFieldMatricula.setTooltip(new Tooltip("Digite a matrícula do pesquisador (até 8 caracteres)."));
+
+        // Validação em tempo real: Descrição (Máx 500 caracteres)
+        textAreaDescricao.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 500 ? change : null));
+        textAreaDescricao.setPromptText("Descreva o problema detalhadamente (máx 500 caracteres)");
+
         // Carrega os laboratórios no ComboBox
         carregarComboBoxLaboratorio();
 

@@ -49,6 +49,22 @@ public class FXMLAnchorPaneProcessosReservasDialogController implements Initiali
         laboratorioDAO.setConnection(connection);
         reservaDAO.setConnection(connection);
         carregarComboBoxes();
+
+        // Validação de Hora Início (Máx 5 caracteres, só permite números e :)
+        textFieldHoraInicio.setTextFormatter(new TextFormatter<>(change -> {
+            String novoTexto = change.getControlNewText();
+            return (novoTexto.matches("[0-9:]*") && novoTexto.length() <= 5) ? change : null;
+        }));
+        textFieldHoraInicio.setPromptText("HH:mm");
+        textFieldHoraInicio.setTooltip(new Tooltip("Digite a hora no formato HH:mm (ex: 14:30)"));
+
+        // Validação de Hora Fim (Máx 5 caracteres, só permite números e :)
+        textFieldHoraFim.setTextFormatter(new TextFormatter<>(change -> {
+            String novoTexto = change.getControlNewText();
+            return (novoTexto.matches("[0-9:]*") && novoTexto.length() <= 5) ? change : null;
+        }));
+        textFieldHoraFim.setPromptText("HH:mm");
+        textFieldHoraFim.setTooltip(new Tooltip("Digite a hora no formato HH:mm (ex: 16:00)"));
     }
 
     public void carregarComboBoxes() {

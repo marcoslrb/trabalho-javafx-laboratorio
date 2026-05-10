@@ -54,15 +54,29 @@ O projeto segue os padrões solicitados no trabalho:
 - Reserva somente pode ser feita por um pesquisador cadastrado
 - Reserva somente pode ser feita se houver disponibilidade do laboratório
 - Um mesmo pesquisador não pode fazer mais do que 5 reservas, na mesma semana, em um laboratório específico
+- **A data e hora de término da reserva deve ser obrigatoriamente posterior à data e hora de início.**
 
 ### Pedido de Manutenção
 
 - O pedido só pode ser registrado após validação da matrícula de um pesquisador válido
 - O sistema verifica se existe reserva do pesquisador para o laboratório nos últimos 5 dias
 - O sistema verifica se já existe pedido de manutenção pendente do mesmo pesquisador para o mesmo laboratório
-- Ao registrar um pedido com sucesso, o laboratório é atualizado para `funcional = false`
+- Ao registrar um pedido com sucesso, o laboratório é atualizado para `funcional = false` **através de uma transação atômica (tudo ou nada)**.
 
-### --- Adiciona as suas aqui @AndreVaIane --- # TODO
+### Cadastros e Integridade de Dados
+
+- **Unicidade:** O CPF e o E-mail do pesquisador devem ser únicos no sistema.
+- **Estado Padrão:** Todo laboratório cadastrado inicia com o status `funcional` como verdadeiro por padrão.
+- **Regras de Exclusão (Integridade Referencial):**
+  - Não é possível excluir um **Pesquisador** se ele possuir reservas associadas.
+  - Não é possível excluir um **Laboratório** se ele possuir reservas associadas.
+  - Se uma **Reserva** for excluída, o **Pedido de Manutenção** associado a ela é excluído automaticamente (em cascata).
+
+### Validações de Interface (Tempo Real)
+
+Para melhorar a experiência do usuário e prevenir erros, todos os formulários possuem validações visuais e de bloqueio de digitação:
+- **TextFormatter:** Impede fisicamente a digitação de dados inválidos (ex: letras no CPF/Telefone) e bloqueia quando o limite de caracteres é atingido.
+- **PromptText e Tooltip:** Fornecem dicas visuais de preenchimento (ex: `HH:mm` para horas, limites máximos de tamanho) antes do usuário digitar.
 
 ---
 

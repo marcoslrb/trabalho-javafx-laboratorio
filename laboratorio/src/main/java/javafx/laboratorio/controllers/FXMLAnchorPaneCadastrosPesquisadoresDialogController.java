@@ -10,7 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.laboratorio.models.domain.Pesquisador;
 import javafx.scene.control.Alert;
-
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Tooltip;
 public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Initializable {
 
     @FXML
@@ -36,6 +37,36 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Validação em tempo real: Matrícula (Máx 8 caracteres)
+        textFieldMatricula.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 8 ? change : null));
+        textFieldMatricula.setPromptText("Máx. 8 caracteres");
+        textFieldMatricula.setTooltip(new Tooltip("Digite a matrícula do pesquisador (até 8 caracteres)."));
+
+        // Validação em tempo real: Nome (Máx 100 caracteres)
+        textFieldNome.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 100 ? change : null));
+        textFieldNome.setPromptText("Nome completo");
+
+        // Validação em tempo real: E-mail (Máx 50 caracteres)
+        textFieldEmail.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 50 ? change : null));
+        textFieldEmail.setPromptText("exemplo@email.com");
+
+        // Validação em tempo real: CPF (Apenas números, Máx 11)
+        textFieldCPF.setTextFormatter(new TextFormatter<>(change -> {
+            String novoTexto = change.getControlNewText();
+            return (novoTexto.matches("\\d*") && novoTexto.length() <= 11) ? change : null;
+        }));
+        textFieldCPF.setPromptText("Apenas números (11 dígitos)");
+        textFieldCPF.setTooltip(new Tooltip("Digite apenas os 11 números do seu CPF."));
+
+        // Validação em tempo real: Telefone (Apenas números, Máx 11)
+        textFieldTelefone.setTextFormatter(new TextFormatter<>(change -> {
+            String novoTexto = change.getControlNewText();
+            return (novoTexto.matches("\\d*") && novoTexto.length() <= 11) ? change : null;
+        }));
+        textFieldTelefone.setPromptText("Apenas números com DDD");
     }
 
     public Stage getDialogStage() {

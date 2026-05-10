@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.Stage;
 import javafx.laboratorio.models.domain.Laboratorio;
 
@@ -31,7 +32,20 @@ public class FXMLAnchorPaneCadastrosLaboratoriosDialogController implements Init
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Inicialização primária, se necessária
+        // Validação em tempo real: Nome (Máx 100 caracteres)
+        textFieldNome.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 100 ? change : null));
+        textFieldNome.setPromptText("Nome do Laboratório (máx 100 caracteres)");
+
+        // Validação em tempo real: Área (Máx 50 caracteres)
+        textFieldArea.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 50 ? change : null));
+        textFieldArea.setPromptText("Área de Atuação (máx 50 caracteres)");
+
+        // Validação em tempo real: Descrição (Máx 300 caracteres)
+        textAreaDescricao.setTextFormatter(new TextFormatter<>(change -> 
+            change.getControlNewText().length() <= 300 ? change : null));
+        textAreaDescricao.setPromptText("Descrição detalhada (máx 300 caracteres)");
     }
 
     public Stage getDialogStage() {
