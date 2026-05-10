@@ -12,6 +12,7 @@ import javafx.laboratorio.models.domain.Pesquisador;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.Tooltip;
+
 public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Initializable {
 
     @FXML
@@ -38,19 +39,19 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Validação em tempo real: Matrícula (Máx 8 caracteres)
-        textFieldMatricula.setTextFormatter(new TextFormatter<>(change -> 
-            change.getControlNewText().length() <= 8 ? change : null));
+        textFieldMatricula.setTextFormatter(
+                new TextFormatter<>(change -> change.getControlNewText().length() <= 8 ? change : null));
         textFieldMatricula.setPromptText("Máx. 8 caracteres");
         textFieldMatricula.setTooltip(new Tooltip("Digite a matrícula do pesquisador (até 8 caracteres)."));
 
         // Validação em tempo real: Nome (Máx 100 caracteres)
-        textFieldNome.setTextFormatter(new TextFormatter<>(change -> 
-            change.getControlNewText().length() <= 100 ? change : null));
+        textFieldNome.setTextFormatter(
+                new TextFormatter<>(change -> change.getControlNewText().length() <= 100 ? change : null));
         textFieldNome.setPromptText("Nome completo");
 
         // Validação em tempo real: E-mail (Máx 50 caracteres)
-        textFieldEmail.setTextFormatter(new TextFormatter<>(change -> 
-            change.getControlNewText().length() <= 50 ? change : null));
+        textFieldEmail.setTextFormatter(
+                new TextFormatter<>(change -> change.getControlNewText().length() <= 50 ? change : null));
         textFieldEmail.setPromptText("exemplo@email.com");
 
         // Validação em tempo real: CPF (Apenas números, Máx 11)
@@ -90,6 +91,8 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
         if (this.pesquisador.getMatricula() != null) {
             this.textFieldMatricula.setText(this.pesquisador.getMatricula());
             this.textFieldMatricula.setEditable(false);
+            this.textFieldMatricula.setStyle("-fx-background-color: #e0e0e0; -fx-text-fill: #555555; -fx-cursor: not-allowed; -fx-focus-color: transparent;");
+            this.textFieldMatricula.setTooltip(new Tooltip("A matrícula é a identidade do registro e não pode ser alterada."));
             this.textFieldNome.setText(this.pesquisador.getNome());
             this.textFieldEmail.setText(this.pesquisador.getEmail());
             this.textFieldCPF.setText(this.pesquisador.getCpf());
@@ -97,7 +100,7 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
             this.checkBoxSuspenso.setSelected(this.pesquisador.isSuspenso());
         }
     }
-    
+
     private boolean validarEntradaDeDados() {
         String errorMessage = "";
 

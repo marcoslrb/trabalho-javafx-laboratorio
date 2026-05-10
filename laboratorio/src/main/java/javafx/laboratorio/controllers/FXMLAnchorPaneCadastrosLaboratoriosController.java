@@ -122,6 +122,8 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
 
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Cadastro de Laboratório");
+        dialogStage.initOwner(tableViewLaboratorios.getScene().getWindow());
+        dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
         dialogStage.setScene(new Scene(page));
 
         FXMLAnchorPaneCadastrosLaboratoriosDialogController controller = loader.getController();

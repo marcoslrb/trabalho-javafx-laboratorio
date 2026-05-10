@@ -132,6 +132,8 @@ public class FXMLAnchorPaneCadastrosPesquisadoresController implements Initializ
 
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Registo de Pesquisador");
+        dialogStage.initOwner(tableViewPesquisadores.getScene().getWindow());
+        dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
         Scene scene = new Scene(page);
         dialogStage.setScene(scene);
 

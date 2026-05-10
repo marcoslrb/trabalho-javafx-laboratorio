@@ -119,7 +119,7 @@ public class FXMLAnchorPaneProcessosReservasController implements Initializable 
 
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Registo de Reserva");
-        
+        dialogStage.initOwner(tableViewReservas.getScene().getWindow());
         dialogStage.initStyle(javafx.stage.StageStyle.UTILITY);
         dialogStage.setResizable(false);
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
