@@ -14,21 +14,6 @@ import javafx.stage.Stage;
 public class FXMLVBoxMainController implements Initializable {
 
     @FXML
-    private MenuItem menuItemCadastrosPesquisadores;
-    @FXML
-    private MenuItem menuItemCadastrosLaboratorios;
-    @FXML
-    private MenuItem menuItemProcessosReservas;
-    @FXML
-    private MenuItem menuItemProcessosManutencoes;
-    @FXML
-    private MenuItem menuItemGraficosConfiabilidade;
-    @FXML
-    private MenuItem menuItemRelatoriosOcupacao;
-    @FXML
-    private MenuItem menuItemRelatoriosIncidentes;
-
-    @FXML
     private AnchorPane anchorPane;
 
     @Override
@@ -68,7 +53,12 @@ public class FXMLVBoxMainController implements Initializable {
 
     @FXML
     public void handleMenuItemProcessosReservas() throws IOException {
-        System.out.println("Ecrã de Reservas será implementado em breve.");
+        // Chamamos o método utilitário que o grupo criou para injetar o FXML no centro da tela.
+        // Isso garante que a tabela de reservas ocupe todo o espaço disponível.
+        carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneProcessosReservas.fxml");
+        
+        // Atualiza o título da janela principal para o utilizador saber exatamente onde está.
+        alterarTituloJanela("Processos - Reservas");
     }
 
     @FXML
