@@ -32,7 +32,7 @@ public class ReservaDAO {
             
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, reserva.getPesquisador().getMatricula());
-            stmt.setInt(2, reserva.getLaboratorio().getIdLaboratorio());
+            stmt.setInt(2, reserva.getLaboratorio().getId());
             
             stmt.setTimestamp(3, Timestamp.valueOf(reserva.getDataHoraInicio()));
             stmt.setTimestamp(4, Timestamp.valueOf(reserva.getDataHoraFim()));

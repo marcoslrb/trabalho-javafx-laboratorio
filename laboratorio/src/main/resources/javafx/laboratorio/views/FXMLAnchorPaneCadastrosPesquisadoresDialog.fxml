@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Group?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneCadastrosPesquisadoresDialogController">
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneCadastrosPesquisadoresDialogController">
    <children>
       <GridPane layoutX="30.0" layoutY="25.0" prefHeight="200.0" prefWidth="360.0">
         <columnConstraints>
@@ -32,12 +38,12 @@
             <TextField fx:id="textFieldEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="textFieldCPF" promptText="Apenas números" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="textFieldTelefone" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <CheckBox fx:id="checkBoxSuspenso" mnemonicParsing="false" text="Pesquisador Suspenso" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <CheckBox fx:id="checkBoxSuspenso" mnemonicParsing="false" text="Pesquisador Suspenso (?)" GridPane.columnIndex="1" GridPane.rowIndex="5" />
          </children>
       </GridPane>
       <Group layoutX="230.0" layoutY="250.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
          <children>
-            <Button fx:id="buttonConfirmar" mnemonicParsing="false" onAction="#handleButtonConfirmar" prefWidth="75.0" text="Confirmar" />
+            <Button fx:id="buttonConfirmar" layoutX="-7.0" mnemonicParsing="false" onAction="#handleButtonConfirmar" prefHeight="26.0" prefWidth="85.0" text="Confirmar" />
             <Button fx:id="buttonCancelar" layoutX="85.0" mnemonicParsing="false" onAction="#handleButtonCancelar" prefWidth="75.0" text="Cancelar" />
          </children>
       </Group>

@@ -1,39 +1,112 @@
 # trabalho-javafx-laboratorio
 
+Projeto acadêmico desenvolvido em **JavaFX** com arquitetura **MVC**, persistência com **DAO**, conexão com banco via **Factory** e banco de dados **PostgreSQL**.
+
+O sistema foi pensado para o gerenciamento de uso de laboratórios de pesquisa, incluindo cadastros, reservas, pedidos de manutenção, relatório e gráfico.
+
+---
+
+## Tecnologias utilizadas
+
+- Java
+- JavaFX
+- FXML
+- JDBC
+- PostgreSQL
+
+---
+
+## Arquitetura do projeto
+
+O projeto segue os padrões solicitados no trabalho:
+
+- **MVC (Model-View-Controller)** para organização da aplicação
+- **DAO (Data Access Object)** para acesso ao banco de dados
+- **Factory** para criação da conexão com o banco
+
+### Organização em camadas
+
+- `models/domain` → classes de domínio
+- `models/dao` → acesso a dados
+- `controllers` → controladores JavaFX
+- `views` → telas FXML
+- `services` → regras de negócio
+- `database` → conexão com o banco
+
+---
+
 ## Entidades
 
-- Pesquisador
-- Laboratório
+- **Pesquisador**
+- **Laboratório**
 
 ## Processos
 
-- Reserva
-- Pedido de Manutenção
+- **Reserva**
+- **Pedido de Manutenção**
 
-## Regra de Negócio
+--
 
-- Reserva somente pode ser feita por um pesquisador cadastrado;
-- Reserva somente pode ser feita se houver disponibilidade do laboratório (deve ser checado a data e horários do uso);
-- Um mesmo pesquisador não pode fazer mais do que 5 reservas, na mesma semana, em um laboratório específico;
+## Regras de negócio
 
-- O pedido de manutenção só deve ser registrado após a validação da matrícula de um pesquisador válido;
-- Verifica se não há nenhum outro pedido de manutenção do laboratório pelo mesmo pesquisador - (verifica a tabela de pedido manutenção);
-- O pedido de manutenção só deve ser registrado com até 5 dias após a data de uso do laboratório reservado (id do pesquisador + laboratório) - verifica a reserva;
+### Reserva
+
+- Reserva somente pode ser feita por um pesquisador cadastrado
+- Reserva somente pode ser feita se houver disponibilidade do laboratório
+- Um mesmo pesquisador não pode fazer mais do que 5 reservas, na mesma semana, em um laboratório específico
+
+### Pedido de Manutenção
+
+- O pedido só pode ser registrado após validação da matrícula de um pesquisador válido
+- O sistema verifica se existe reserva do pesquisador para o laboratório nos últimos 5 dias
+- O sistema verifica se já existe pedido de manutenção pendente do mesmo pesquisador para o mesmo laboratório
+- Ao registrar um pedido com sucesso, o laboratório é atualizado para `funcional = false`
+
+### --- Adiciona as suas aqui @AndreVaIane --- # TODO
+
+---
+
+---
+
+## Operações de banco no registro do pedido
+
+Durante o processo de inserção do pedido de manutenção, o sistema realiza as seguintes operações no banco:
+
+1. validar se o pesquisador existe e está ativo
+2. buscar os dados do pesquisador
+3. verificar se existe reserva válida nos últimos 5 dias
+4. verificar se já existe pedido pendente para o mesmo pesquisador e laboratório
+5. inserir o pedido de manutenção
+6. atualizar o status do laboratório para não funcional
+
+---
+
+## Script SQL
+
+O arquivo `sql/DB.sql` contém:
+
+- criação das tabelas do sistema
+- relacionamentos entre as tabelas
+- inserção de pelo menos 2 registros por tabela
+- consultas SQL utilizadas como apoio no desenvolvimento
+
+---
 
 ## % Relatórios (Jasper Reports)
 
 ### Relatório 1: Extrato de Ocupação por Pesquisador
 
-**Objetivo:**  
-Consolidar todas as reservas que um pesquisador fez para fins de comprovação de horas de pesquisa.
+**Objetivo:** consolidar as reservas de um pesquisador para comprovação de horas de pesquisa.
 
-**Campos:**  
-Data Início, Data Fim, Nome do Laboratório e ID da Reserva.
+**Campos:**
 
-**Diferencial (Requisitos):**  
-Utiliza **WHERE** para filtrar por matrícula e **COUNT** para totalizar as reservas no período.
+- Data Início
+- Data Fim
+- Nome do Laboratório
+- ID da Reserva
 
 **SQL Base:**
+
 ```sql
 SELECT 
     r.data_inicio, 
@@ -45,17 +118,19 @@ INNER JOIN LABORATORIO l ON r.id_laboratorio = l.id
 WHERE r.matricula_pesquisador = $P{p_matricula};
 ```
 
----
-
 ### Relatório 2: Log de Incidentes e Impacto em Reservas
 
-**Objetivo:**  
-Listar os problemas relatados e quem foi o responsável por identificá-los através de uma reserva.
+**Objetivo:** listar os problemas relatados e quem identificou o problema através de uma reserva.
 
-**Campos:**  
-Data do Pedido, Nome do Pesquisador, Nome do Laboratório, Descrição do Defeito.
+**Campos:**
+
+- Data do Pedido
+- Nome do Pesquisador
+- Nome do Laboratório
+- Descrição do Defeito
 
 **SQL Base:**
+
 ```sql
 SELECT 
     pm.hora_pedido, 
@@ -70,71 +145,78 @@ JOIN LABORATORIO l ON r.id_laboratorio = l.id;
 
 ---
 
-## § Gráficos (JavaFX BarChart)
+## Gráfico
 
-### Gráfico 1: Índice de Confiabilidade (Barras)
+### Índice de Confiabilidade dos Laboratórios
 
-**O que mostra:**  
-No eixo X, os nomes dos laboratórios. No eixo Y, a quantidade de pedidos de manutenção.
+Gráfico de barras em JavaFX para exibir a quantidade de pedidos de manutenção por laboratório.
 
-**Objetivo:**  
-Identificar visualmente laboratórios com alto índice de falhas.
+**Objetivo:** identificar laboratórios com maior incidência de falhas.
 
-**SQL Base (Com WHERE e COUNT):**
+**SQL Base:**
+
 ```sql
-SELECT l.nome, COUNT(pm.id) as total_falhas
+SELECT l.nome, COUNT(pm.id) AS total_falhas
 FROM LABORATORIO l
 INNER JOIN PEDIDO_MANUTENCAO pm ON l.id = pm.id_laboratorio
-WHERE l.funcional = FALSE  -- Exibe apenas laboratórios com problemas ativos
+WHERE l.funcional = FALSE
 GROUP BY l.nome;
 ```
 
 ---
 
-## Estrutura do Banco de Dados
+## Estrutura do banco de dados
 
 ### PESQUISADOR
-* matricula (PK, VARCHAR(8))
-* nome (VARCHAR(100), NOT NULL)
-* email (VARCHAR(50), NOT NULL, UNIQUE)
-* cpf (VARCHAR(11), NOT NULL, UNIQUE)
-* telefone (VARCHAR(11), UNIQUE, NULL)
-* suspenso (BOOL(FALSE), NOT NULL)
 
-### LABORATÓRIO
-* id (PK, INT)
-* nome (VARCHAR(100), NOT NULL)
-* area (VARCHAR(50), NOT NULL)
-* descricao (VARCHAR(300), NULL)
-* funcional (BOOL, NOT NULL)
+- `matricula` (PK, VARCHAR(8))
+- `nome` (VARCHAR(100), NOT NULL)
+- `email` (VARCHAR(50), NOT NULL, UNIQUE)
+- `cpf` (VARCHAR(11), NOT NULL, UNIQUE)
+- `telefone` (VARCHAR(11), UNIQUE, NULL)
+- `suspenso` (BOOL DEFAULT FALSE, NOT NULL)
 
-### RESERVA (REL.)
-* id (PK, INT)
-* data_inicio (DATETIME, NOT NULL)
-* data_fim (DATETIME, NOT NULL)
-* matricula_pesquisador (FK)
-* id_laboratorio (FK)
+### LABORATORIO
 
-### PEDIDO_MANUTENCAO (REL.)
-* id (PK, INT)
-* id_reserva (FK)
-* id_laboratorio (FK)
-* hora_pedido (DATETIME, NOT NULL)
-* descricao (VARCHAR(500), NOT NULL)
-* status_resolvido (BOOL, NOT NULL)
+- `id` (PK, INT)
+- `nome` (VARCHAR(100), NOT NULL)
+- `area` (VARCHAR(50), NOT NULL)
+- `descricao` (VARCHAR(300), NULL)
+- `funcional` (BOOL, NOT NULL)
+
+### RESERVA
+
+- `id` (PK, INT)
+- `data_inicio` (TIMESTAMP, NOT NULL)
+- `data_fim` (TIMESTAMP, NOT NULL)
+- `matricula_pesquisador` (FK)
+- `id_laboratorio` (FK)
+
+### PEDIDO_MANUTENCAO
+
+- `id` (PK, INT)
+- `id_reserva` (FK)
+- `id_laboratorio` (FK)
+- `hora_pedido` (TIMESTAMP, NOT NULL)
+- `descricao` (VARCHAR(500), NOT NULL)
+- `status_resolvido` (BOOL, NOT NULL)
 
 ---
 
 ## Telas do Sistema
 
 ### Tela de Reserva
-* Aplicação das três regras de negócio;
-* Lista de reservas atuais;
-* Seleção de laboratórios via ComboBox.
+
+- Aplicação das três regras de negócio;
+
+- Lista de reservas atuais;
+- Seleção de laboratórios via ComboBox.
 
 ### Tela de Pedido de Manutenção
-* **Validar Pesquisador:** Consulta na tabela PESQUISADOR.
-* **Validar Reserva:** Verifica se existe reserva (matrícula + lab) nos últimos 5 dias.
-* **Verificar Duplicidade:** Garante que não haja chamado aberto idêntico pendente.
-* **Inserir Pedido:** Registro na tabela PEDIDO_MANUTENCAO.
-* **Atualizar Status:** Altera `LABORATORIO.funcional` para `FALSE`.
+
+- **Validar Pesquisador:** Consulta na tabela PESQUISADOR.
+
+- **Validar Reserva:** Verifica se existe reserva (matrícula + lab) nos últimos 5 dias.
+- **Verificar Duplicidade:** Garante que não haja chamado aberto idêntico pendente.
+- **Inserir Pedido:** Registro na tabela PEDIDO_MANUTENCAO.
+- **Atualizar Status:** Altera `LABORATORIO.funcional` para `FALSE`.

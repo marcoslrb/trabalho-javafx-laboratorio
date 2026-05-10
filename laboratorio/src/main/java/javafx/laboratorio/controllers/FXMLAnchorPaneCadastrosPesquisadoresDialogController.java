@@ -70,37 +70,45 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
     private boolean validarEntradaDeDados() {
         String errorMessage = "";
 
+        String matricula = textFieldMatricula.getText() == null ? "" : textFieldMatricula.getText().trim();
+        String nome = textFieldNome.getText() == null ? "" : textFieldNome.getText().trim();
+        String email = textFieldEmail.getText() == null ? "" : textFieldEmail.getText().trim();
+        String cpfNumerico = manterApenasDigitos(textFieldCPF.getText());
+        String telefoneNumerico = manterApenasDigitos(textFieldTelefone.getText());
+
         // Valida Matrícula (Máximo 8 caracteres)
-        if (textFieldMatricula.getText() == null || textFieldMatricula.getText().trim().isEmpty()) {
+        if (matricula.isEmpty()) {
             errorMessage += "Matrícula inválida! Não pode estar vazia.\n";
-        } else if (textFieldMatricula.getText().length() > 8) {
+        } else if (matricula.length() > 8) {
             errorMessage += "Matrícula muito longa! Máximo de 8 caracteres.\n";
         }
 
         // Valida Nome (Máximo 100 caracteres)
-        if (textFieldNome.getText() == null || textFieldNome.getText().trim().isEmpty()) {
+        if (nome.isEmpty()) {
             errorMessage += "Nome inválido! Não pode estar vazio.\n";
-        } else if (textFieldNome.getText().length() > 100) {
+        } else if (nome.length() > 100) {
             errorMessage += "Nome muito longo! Máximo de 100 caracteres.\n";
         }
 
         // Valida E-mail (Máximo 50 caracteres)
-        if (textFieldEmail.getText() == null || textFieldEmail.getText().trim().isEmpty()) {
+        if (email.isEmpty()) {
             errorMessage += "E-mail inválido! Não pode estar vazio.\n";
-        } else if (textFieldEmail.getText().length() > 50) {
+        } else if (email.length() > 50) {
             errorMessage += "E-mail muito longo! Máximo de 50 caracteres.\n";
         }
 
-        // Valida CPF (Máximo 11 caracteres)
-        if (textFieldCPF.getText() == null || textFieldCPF.getText().trim().isEmpty()) {
+        // Valida CPF (11 dígitos)
+        if (cpfNumerico.isEmpty()) {
             errorMessage += "CPF inválido! Não pode estar vazio.\n";
-        } else if (textFieldCPF.getText().length() > 11) {
-            errorMessage += "CPF muito longo! Máximo de 11 caracteres (apenas números).\n";
+        } else if (cpfNumerico.length() != 11) {
+            errorMessage += "CPF inválido! Informe exatamente 11 dígitos.\n";
         }
 
-        // Valida Telefone (Opcional, mas se preenchido, máximo 11 caracteres)
-        if (textFieldTelefone.getText() != null && textFieldTelefone.getText().length() > 11) {
-            errorMessage += "Telefone muito longo! Máximo de 11 caracteres.\n";
+        // Valida Telefone (Opcional; se informado, 10 ou 11 dígitos)
+        if (!telefoneNumerico.isEmpty()
+                && telefoneNumerico.length() != 10
+                && telefoneNumerico.length() != 11) {
+            errorMessage += "Telefone inválido! Informe 10 ou 11 dígitos.\n";
         }
 
         if (errorMessage.length() == 0) {
@@ -118,16 +126,29 @@ public class FXMLAnchorPaneCadastrosPesquisadoresDialogController implements Ini
     @FXML
     public void handleButtonConfirmar() {
         if (validarEntradaDeDados()) {
-            pesquisador.setMatricula(textFieldMatricula.getText());
-            pesquisador.setNome(textFieldNome.getText());
-            pesquisador.setEmail(textFieldEmail.getText());
-            pesquisador.setCpf(textFieldCPF.getText());
-            pesquisador.setTelefone(textFieldTelefone.getText());
+            String matricula = textFieldMatricula.getText().trim();
+            String nome = textFieldNome.getText().trim();
+            String email = textFieldEmail.getText().trim().toLowerCase();
+            String cpf = manterApenasDigitos(textFieldCPF.getText());
+            String telefone = manterApenasDigitos(textFieldTelefone.getText());
+
+            pesquisador.setMatricula(matricula);
+            pesquisador.setNome(nome);
+            pesquisador.setEmail(email);
+            pesquisador.setCpf(cpf);
+            pesquisador.setTelefone(telefone.isBlank() ? null : telefone);
             pesquisador.setSuspenso(checkBoxSuspenso.isSelected());
 
             buttonConfirmarClicked = true;
             dialogStage.close();
         }
+    }
+
+    private String manterApenasDigitos(String texto) {
+        if (texto == null) {
+            return "";
+        }
+        return texto.replaceAll("\\D", "");
     }
 
     @FXML

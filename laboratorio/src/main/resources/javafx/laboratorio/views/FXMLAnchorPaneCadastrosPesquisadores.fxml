@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Group?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneCadastrosPesquisadoresController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.laboratorio.controllers.FXMLAnchorPaneCadastrosPesquisadoresController">
    <children>
       <SplitPane dividerPositions="0.4" layoutX="100.0" layoutY="60.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -24,12 +31,12 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <Label layoutX="95.0" layoutY="14.0" text="Detalhes do Pesquisador">
+                  <Label layoutX="80.0" layoutY="14.0" text="Detalhes do Pesquisador">
                      <font>
-                        <Font name="System Bold" size="14.0" />
+                        <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
-                  <GridPane layoutX="30.0" layoutY="62.0" prefHeight="180.0" prefWidth="296.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+                  <GridPane layoutX="20.0" layoutY="54.0" prefHeight="180.0" prefWidth="296.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="40.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="85.0" />
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="211.0" minWidth="10.0" prefWidth="211.0" />
@@ -43,12 +50,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Label text="Matrícula" />
-                        <Label text="Nome" GridPane.rowIndex="1" />
-                        <Label text="E-mail" GridPane.rowIndex="2" />
-                        <Label text="CPF" GridPane.rowIndex="3" />
-                        <Label text="Telefone" GridPane.rowIndex="4" />
-                        <Label text="Status" GridPane.rowIndex="5" />
+                        <Label text="Matrícula:" />
+                        <Label text="Nome:" GridPane.rowIndex="1" />
+                        <Label text="E-mail:" GridPane.rowIndex="2" />
+                        <Label text="CPF:" GridPane.rowIndex="3" />
+                        <Label text="Telefone:" GridPane.rowIndex="4" />
+                        <Label text="Status:" GridPane.rowIndex="5" />
                         <Label fx:id="labelPesquisadorMatricula" GridPane.columnIndex="1" />
                         <Label fx:id="labelPesquisadorNome" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label fx:id="labelPesquisadorEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />

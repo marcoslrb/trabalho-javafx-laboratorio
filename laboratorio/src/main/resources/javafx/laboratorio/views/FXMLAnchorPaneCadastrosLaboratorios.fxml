@@ -47,9 +47,9 @@
                <children>
 
                   <!-- Título -->
-                  <Label layoutX="87.0" layoutY="14.0" text="Detalhes do Laboratório">
+                  <Label layoutX="81.0" layoutY="14.0" text="Detalhes do Laboratório">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
 
@@ -84,7 +84,7 @@
                   </GridPane>
 
                   <!-- Botões de ação: Inserir | Alterar | Remover -->
-                  <HBox layoutX="20.0" spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                  <HBox layoutX="20.0" prefHeight="26.0" prefWidth="262.0" spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
                      <children>
                         <Button fx:id="buttonInserir" mnemonicParsing="false" onAction="#handleButtonInserir" prefWidth="85.0" text="Inserir" />
                         <Button fx:id="buttonAlterar" mnemonicParsing="false" onAction="#handleButtonAlterar" prefWidth="85.0" text="Alterar" />

@@ -79,9 +79,9 @@ public class FXMLAnchorPaneCadastrosPesquisadoresController implements Initializ
             labelPesquisadorMatricula.setText(pesquisador.getMatricula());
             labelPesquisadorNome.setText(pesquisador.getNome());
             labelPesquisadorEmail.setText(pesquisador.getEmail());
-            labelPesquisadorCPF.setText(pesquisador.getCpf());
-            labelPesquisadorTelefone.setText(pesquisador.getTelefone());
-            labelPesquisadorStatus.setText(pesquisador.isSuspenso() ? "Suspenso" : "Ativo");
+            labelPesquisadorCPF.setText(formatarCPF(pesquisador.getCpf()));
+            labelPesquisadorTelefone.setText(formatarTelefone(pesquisador.getTelefone()));
+            labelPesquisadorStatus.setText(pesquisador.isSuspenso() ? "✘ Suspenso" : "✔ Ativo");
         } else {
             labelPesquisadorMatricula.setText("");
             labelPesquisadorNome.setText("");
@@ -90,6 +90,39 @@ public class FXMLAnchorPaneCadastrosPesquisadoresController implements Initializ
             labelPesquisadorTelefone.setText("");
             labelPesquisadorStatus.setText("");
         }
+    }
+
+    private String formatarCPF(String cpf) {
+        String cpfNumerico = manterApenasDigitos(cpf);
+        if (cpfNumerico.length() == 11) {
+            return cpfNumerico.substring(0, 3) + "."
+                    + cpfNumerico.substring(3, 6) + "."
+                    + cpfNumerico.substring(6, 9) + "-"
+                    + cpfNumerico.substring(9, 11);
+        }
+        return cpf == null ? "" : cpf;
+    }
+
+    private String formatarTelefone(String telefone) {
+        String telefoneNumerico = manterApenasDigitos(telefone);
+        if (telefoneNumerico.length() == 11) {
+            return "(" + telefoneNumerico.substring(0, 2) + ") "
+                    + telefoneNumerico.substring(2, 7) + "-"
+                    + telefoneNumerico.substring(7, 11);
+        }
+        if (telefoneNumerico.length() == 10) {
+            return "(" + telefoneNumerico.substring(0, 2) + ") "
+                    + telefoneNumerico.substring(2, 6) + "-"
+                    + telefoneNumerico.substring(6, 10);
+        }
+        return (telefone == null || telefone.isBlank()) ? "(não informado)" : telefone;
+    }
+
+    private String manterApenasDigitos(String texto) {
+        if (texto == null) {
+            return "";
+        }
+        return texto.replaceAll("\\D", "");
     }
     
     public boolean showFXMLAnchorPaneCadastrosPesquisadoresDialog(Pesquisador pesquisador) throws IOException {
