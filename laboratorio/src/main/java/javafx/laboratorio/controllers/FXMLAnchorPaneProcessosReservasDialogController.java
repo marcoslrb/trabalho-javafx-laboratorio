@@ -2,6 +2,7 @@ package javafx.laboratorio.controllers;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -65,6 +66,23 @@ public class FXMLAnchorPaneProcessosReservasDialogController implements Initiali
         }));
         textFieldHoraFim.setPromptText("HH:mm");
         textFieldHoraFim.setTooltip(new Tooltip("Digite a hora no formato HH:mm (ex: 16:00)"));
+
+        // Restringir datas passadas nos DatePickers
+        datePickerDataInicio.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isBefore(LocalDate.now()));
+            }
+        });
+
+        datePickerDataFim.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isBefore(LocalDate.now()));
+            }
+        });
     }
 
     public void carregarComboBoxes() {

@@ -309,6 +309,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         taDescricao.setWrapText(true);
         taDescricao.setPrefRowCount(4);
         taDescricao.setPrefWidth(350);
+        taDescricao.setPromptText("Descreva o problema detalhadamente (máx 500 caracteres)");
 
         javafx.scene.control.CheckBox cbResolvido = new javafx.scene.control.CheckBox("Marcado como resolvido");
         cbResolvido.setSelected(pedidoSelecionado.isStatusResolvido());

@@ -26,18 +26,18 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Matrícula" />
-            <Label text="Nome" GridPane.rowIndex="1" />
-            <Label text="E-mail" GridPane.rowIndex="2" />
-            <Label text="CPF" GridPane.rowIndex="3" />
-            <Label text="Telefone" GridPane.rowIndex="4" />
-            <Label text="Status" GridPane.rowIndex="5" />
+            <Label text="Matrícula:" />
+            <Label text="Nome:" GridPane.rowIndex="1" />
+            <Label text="E-mail:" GridPane.rowIndex="2" />
+            <Label text="CPF:" GridPane.rowIndex="3" />
+            <Label text="Telefone:" GridPane.rowIndex="4" />
+            <Label text="Status:" GridPane.rowIndex="5" />
             
-            <TextField fx:id="textFieldMatricula" GridPane.columnIndex="1" />
-            <TextField fx:id="textFieldNome" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="textFieldEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField fx:id="textFieldCPF" promptText="Apenas números" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <TextField fx:id="textFieldTelefone" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <TextField fx:id="textFieldMatricula" promptText="Máx. 8 caracteres" GridPane.columnIndex="1" />
+            <TextField fx:id="textFieldNome" promptText="Nome completo" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="textFieldEmail" promptText="exemplo@email.com" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="textFieldCPF" promptText="Apenas números (11 dígitos)" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="textFieldTelefone" promptText="Apenas números com DDD" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <CheckBox fx:id="checkBoxSuspenso" mnemonicParsing="false" text="Pesquisador Suspenso (?)" GridPane.columnIndex="1" GridPane.rowIndex="5" />
          </children>
       </GridPane>

@@ -55,6 +55,7 @@ O projeto segue os padrões solicitados no trabalho:
 - Reserva somente pode ser feita se houver disponibilidade do laboratório
 - Um mesmo pesquisador não pode fazer mais do que 5 reservas, na mesma semana, em um laboratório específico
 - **A data e hora de término da reserva deve ser obrigatoriamente posterior à data e hora de início.**
+- **Não é permitido realizar reservas para datas no passado (bloqueio direto no calendário).**
 
 ### Pedido de Manutenção
 
@@ -76,7 +77,8 @@ O projeto segue os padrões solicitados no trabalho:
 
 Para melhorar a experiência do usuário e prevenir erros, todos os formulários possuem validações visuais e de bloqueio de digitação:
 - **TextFormatter:** Impede fisicamente a digitação de dados inválidos (ex: letras no CPF/Telefone) e bloqueia quando o limite de caracteres é atingido.
-- **PromptText e Tooltip:** Fornecem dicas visuais de preenchimento (ex: `HH:mm` para horas, limites máximos de tamanho) antes do usuário digitar.
+- **PromptText e Tooltip:** Fornecem dicas visuais de preenchimento (ex: `HH:mm` para horas, `dd/MM/yyyy` para datas, limites máximos de tamanho) antes do usuário digitar.
+- **DateCell Factory:** Desabilita fisicamente a seleção de dias anteriores à data atual nos calendários (DatePickers) de reserva.
 
 ---
 
