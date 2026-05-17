@@ -3,6 +3,8 @@ module javafx.laboratorio {
     requires javafx.fxml;
     requires java.base;
     requires java.sql;
+    requires jasperreports;
+    requires java.desktop;
 
     opens javafx.laboratorio to javafx.fxml;
     opens javafx.laboratorio.controllers to javafx.fxml;
