@@ -77,6 +77,11 @@ public class FXMLVBoxMainController implements Initializable {
         alterarTituloJanela("Gráfico de Confiabilidade");
     }
     @FXML
+    public void handleMenuItemGraficosReservas() throws IOException {
+        carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneGraficosReservas.fxml");
+        alterarTituloJanela("Gráfico de Reservas");
+    }
+    @FXML
     public void handleMenuItemRelatoriosOcupacao() { System.out.println("Não implementado"); }
     @FXML
     public void handleMenuItemRelatoriosIncidentes() { System.out.println("Não implementado"); }

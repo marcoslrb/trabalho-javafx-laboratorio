@@ -84,8 +84,17 @@ public class FXMLAnchorPaneProcessosReservasController implements Initializable 
     public void handleButtonInserir() throws IOException {
         Reserva reserva = new Reserva();
         boolean buttonConfirmarClicked = showFXMLAnchorPaneProcessosReservasDialog(reserva);
+
         if (buttonConfirmarClicked) {
-            carregarTableViewReserva();
+            if (reservaDAO.inserir(reserva)) {
+                carregarTableViewReserva(); // Recarrega a tabela para mostrar a nova reserva
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro na Inserção");
+                alert.setHeaderText("Não foi possível cadastrar a reserva.");
+                alert.setContentText("Ocorreu um erro ao salvar no banco de dados.");
+                alert.show();
+            }
         }
     }
 

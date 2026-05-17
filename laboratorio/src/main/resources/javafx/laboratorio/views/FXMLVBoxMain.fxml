@@ -26,6 +26,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Gráficos">
              <items>
+                <MenuItem fx:id="menuItemGraficosReservas" mnemonicParsing="false" onAction="#handleMenuItemGraficosReservas" text="Ocupação de Laboratórios (Reservas)" />
                 <MenuItem fx:id="menuItemGraficosConfiabilidade" mnemonicParsing="false" onAction="#handleMenuItemGraficosConfiabilidade" text="Índice de Confiabilidade (Falhas)" />
              </items>
           </Menu>

@@ -209,4 +209,21 @@ public class ReservaDAO {
         }
         return 99; // Bloqueia se der erro no banco
     }
+    
+    public java.util.Map<String, Integer> obterDadosGraficoReservas() {
+    String sql = "SELECT l.nome, COUNT(r.id) AS total_reservas " +
+                 "FROM reserva r JOIN laboratorio l ON r.id_laboratorio = l.id " +
+                 "GROUP BY l.nome ORDER BY total_reservas DESC";
+    java.util.Map<String, Integer> retorno = new java.util.LinkedHashMap<>();
+    try {
+        java.sql.PreparedStatement stmt = connection.prepareStatement(sql);
+        java.sql.ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            retorno.put(rs.getString("nome"), rs.getInt("total_reservas"));
+        }
+    } catch (java.sql.SQLException ex) {
+        System.err.println("Erro gráfico reservas: " + ex.getMessage());
+    }
+    return retorno;
+    }
 }
