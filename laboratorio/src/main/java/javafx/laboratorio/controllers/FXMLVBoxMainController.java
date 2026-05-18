@@ -82,7 +82,10 @@ public class FXMLVBoxMainController implements Initializable {
         alterarTituloJanela("Gráfico de Reservas");
     }
     @FXML
-    public void handleMenuItemRelatoriosIncidentes() { System.out.println("Não implementado"); }
+    public void handleMenuItemRelatoriosIncidentes() throws IOException {
+        carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneRelatoriosIncidentes.fxml");
+        alterarTituloJanela("Relatório - Log de Incidentes");
+    }
     @FXML
     public void handleMenuItemRelatoriosOcupacao() throws IOException {
         carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneRelatoriosOcupacao.fxml");

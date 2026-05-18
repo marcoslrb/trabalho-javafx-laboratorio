@@ -25,9 +25,6 @@ public class LaboratorioDAO {
         this.connection = connection;
     }
 
-    // =========================================================
-    // INSERIR um novo laboratório
-    // =========================================================
     /**
      * Insere um laboratório no banco. O 'id' é gerado automaticamente (SERIAL).
      * @return true se inseriu com sucesso, false caso contrário.
@@ -48,9 +45,6 @@ public class LaboratorioDAO {
         }
     }
 
-    // =========================================================
-    // LISTAR todos os laboratórios
-    // =========================================================
     /**
      * Retorna a lista completa de laboratórios do banco.
      */
@@ -75,9 +69,6 @@ public class LaboratorioDAO {
         return retorno;
     }
 
-    // =========================================================
-    // BUSCAR laboratório por ID
-    // =========================================================
     /**
      * Busca um laboratório específico pelo seu ID.
      * @return o Laboratorio encontrado, ou null se não existir.
@@ -103,9 +94,6 @@ public class LaboratorioDAO {
         return null;
     }
 
-    // =========================================================
-    // ALTERAR um laboratório existente
-    // =========================================================
     /**
      * Atualiza os dados de um laboratório. A chave de busca é o 'id'.
      * @return true se atualizou ao menos 1 linha, false caso contrário.
@@ -127,9 +115,6 @@ public class LaboratorioDAO {
         }
     }
 
-    // =========================================================
-    // REMOVER um laboratório
-    // =========================================================
     /**
      * Remove um laboratório pelo seu ID.
      * Atenção: falhará se houver RESERVAS vinculadas (restrição ON DELETE RESTRICT no banco).
@@ -148,9 +133,6 @@ public class LaboratorioDAO {
         }
     }
 
-    // =========================================================
-    // MARCAR LABORATÓRIO COMO NÃO FUNCIONAL (para Pedido de Manutenção)
-    // =========================================================
     /**
      * Regra de negócio: após um pedido de manutenção ser registrado,
      * o laboratório deve ser marcado como não funcional (funcional = FALSE).

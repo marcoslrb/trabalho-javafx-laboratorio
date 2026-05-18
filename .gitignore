@@ -10,6 +10,14 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
+### ECLIPSE ###
+.project
+.classpath
+.settings/
+.metadata/
+*.jpe
+bin/
+
 ### NETBEANS ###
 nbproject/private/
 nbbuild/

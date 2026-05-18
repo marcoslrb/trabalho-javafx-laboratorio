@@ -79,9 +79,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosDialogController implements Init
         }
     }
 
-    // =========================================================
     // Validação dos campos do formulário
-    // =========================================================
     private boolean validarEntradaDeDados() {
         String errorMessage = "";
 
@@ -113,16 +111,14 @@ public class FXMLAnchorPaneCadastrosLaboratoriosDialogController implements Init
         }
     }
 
-    // =========================================================
     // BOTÃO CONFIRMAR
-    // =========================================================
     @FXML
     public void handleButtonConfirmar() {
         if (validarEntradaDeDados()) {
             // Preenche o objeto laboratorio com os dados do formulário
             laboratorio.setNome(textFieldNome.getText().trim());
             laboratorio.setArea(textFieldArea.getText().trim());
-            laboratorio.setDescricao(textAreaDescricao.getText()); // pode ser null/vazio
+            laboratorio.setDescricao(textAreaDescricao.getText());
             laboratorio.setFuncional(checkBoxFuncional.isSelected());
 
             buttonConfirmarClicked = true;
@@ -130,9 +126,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosDialogController implements Init
         }
     }
 
-    // =========================================================
     // BOTÃO CANCELAR
-    // =========================================================
     @FXML
     public void handleButtonCancelar() {
         dialogStage.close();

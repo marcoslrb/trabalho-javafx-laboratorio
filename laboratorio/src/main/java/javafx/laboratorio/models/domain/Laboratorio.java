@@ -14,7 +14,7 @@ public class Laboratorio implements Serializable {
     private String descricao;     // VARCHAR(300), NULL (opcional)
     private boolean funcional;    // BOOLEAN, NOT NULL (true = em uso normal, false = em manutenção)
 
-    // Construtor padrão (necessário para o JavaFX e DAOs)
+    // Construtor padrão 
     public Laboratorio() {
     }
 

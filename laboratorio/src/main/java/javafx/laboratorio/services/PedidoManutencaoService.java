@@ -28,9 +28,6 @@ public class PedidoManutencaoService {
     private final PedidoManutencaoDAO pedidoManutencaoDAO = new PedidoManutencaoDAO();
     private final LaboratorioDAO laboratorioDAO = new LaboratorioDAO();
 
-    // =========================================================
-    // REGISTRAR — método principal com transação JDBC real
-    // =========================================================
     /**
      * Registra um novo pedido de manutenção executando as 4 regras de negócio.
      *
@@ -62,25 +59,15 @@ public class PedidoManutencaoService {
         laboratorioDAO.setConnection(connection);
 
         try {
-            // --------------------------------------------------
-            // Op.1 — RN1: Validar pesquisador (conta e verifica suspenso)
-            // SQL: SELECT COUNT(*) FROM pesquisador WHERE matricula=? AND suspenso=FALSE
-            // --------------------------------------------------
+            // Op.1 — RN1: Validar pesquisador
             if (!pesquisadorValidacaoDAO.isPesquisadorValido(matricula)) {
                 return "ERRO_RN1: Matrícula '" + matricula + "' não encontrada ou pesquisador suspenso.";
             }
 
-            // --------------------------------------------------
             // Op.2 — RN1: Buscar dados completos do pesquisador
-            // SQL: SELECT * FROM pesquisador WHERE matricula = ?
-            // --------------------------------------------------
             Pesquisador pesquisador = pesquisadorValidacaoDAO.buscarPorMatricula(matricula);
 
-            // --------------------------------------------------
             // Op.3 — RN3: Buscar reserva válida nos últimos 5 dias
-            // SQL: SELECT ... FROM reserva JOIN ... WHERE matricula=? AND id_lab=?
-            //      AND data_fim >= NOW() - INTERVAL '5 days' AND data_fim <= NOW()
-            // --------------------------------------------------
             Reserva reservaValida = pedidoManutencaoDAO.buscarReservaValida(matricula, idLaboratorio);
             if (reservaValida == null) {
                 return "ERRO_RN3: Não foi encontrada nenhuma reserva deste pesquisador "
@@ -88,19 +75,13 @@ public class PedidoManutencaoService {
                      + "O pedido só pode ser aberto até 5 dias após o uso.";
             }
 
-            // --------------------------------------------------
             // Op.4 — RN2: Verificar duplicidade de pedido pendente
-            // SQL: SELECT COUNT(*) FROM pedido_manutencao pm JOIN reserva r ...
-            //      WHERE matricula=? AND id_lab=? AND status_resolvido=FALSE
-            // --------------------------------------------------
             if (pedidoManutencaoDAO.existePedidoPendente(matricula, idLaboratorio)) {
                 return "ERRO_RN2: Já existe um pedido PENDENTE deste pesquisador "
                      + "para este laboratório. Aguarde a resolução antes de abrir um novo.";
             }
 
-            // --------------------------------------------------
             // Op.5a + Op.5b — RN4: INSERT + UPDATE dentro de TRANSAÇÃO
-            // --------------------------------------------------
             PedidoManutencao pedido = new PedidoManutencao();
             pedido.setReserva(reservaValida);
             pedido.setLaboratorio(reservaValida.getLaboratorio());
@@ -149,9 +130,7 @@ public class PedidoManutencaoService {
         }
     }
 
-    // =========================================================
     // LISTAR todos os pedidos
-    // =========================================================
     public List<PedidoManutencao> listarTodos() {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -166,9 +145,7 @@ public class PedidoManutencaoService {
         }
     }
 
-    // =========================================================
     // ALTERAR descrição e status de um pedido (edição simples)
-    // =========================================================
     /**
      * Edita a descrição e o status_resolvido de um pedido existente.
      * Validações: descrição não pode ser vazia nem ultrapassar 500 caracteres.
@@ -202,9 +179,7 @@ public class PedidoManutencaoService {
         }
     }
 
-    // =========================================================
     // REMOVER um pedido
-    // =========================================================
     public String remover(int idPedido) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -225,9 +200,7 @@ public class PedidoManutencaoService {
         }
     }
 
-    // =========================================================
-    // MARCAR como resolvido (atalho rápido — botão na tabela)
-    // =========================================================
+    // MARCAR como resolvido (status_resolvido = TRUE)
     public String marcarComoResolvido(int idPedido) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -250,9 +223,7 @@ public class PedidoManutencaoService {
         }
     }
 
-    // =========================================================
     // VALIDAR pesquisador (feedback imediato na tela)
-    // =========================================================
     public Pesquisador validarEBuscarPesquisador(String matricula) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -267,9 +238,7 @@ public class PedidoManutencaoService {
         }
     }
 
-    // =========================================================
     // BUSCAR reserva válida (pré-visualização na tela — Passo 2)
-    // =========================================================
     public Reserva buscarReservaValida(String matricula, int idLaboratorio) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();

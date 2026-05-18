@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RelatorioIncidentes" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="72b8ee30-5807-4e6f-a89e-4c7b6534579c">
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="PostgreSQL Adapter"/>
+    <parameter name="p_id_laboratorio" class="java.lang.Integer">
+        <defaultValueExpression><![CDATA[-1]]></defaultValueExpression>
+    </parameter>
+    <queryString language="SQL">
+        <![CDATA[SELECT 
+            pm.hora_pedido, 
+            p.nome AS pesquisador, 
+            l.nome AS laboratorio, 
+            pm.descricao
+        FROM PEDIDO_MANUTENCAO pm
+        JOIN RESERVA r ON pm.id_reserva = r.id
+        JOIN PESQUISADOR p ON r.matricula_pesquisador = p.matricula
+        JOIN LABORATORIO l ON r.id_laboratorio = l.id
+        WHERE ($P{p_id_laboratorio} = -1 OR l.id = $P{p_id_laboratorio})
+        ORDER BY pm.hora_pedido DESC]]>
+    </queryString>
+    <field name="hora_pedido" class="java.sql.Timestamp">
+        <property name="com.jaspersoft.studio.field.name" value="hora_pedido"/>
+        <property name="com.jaspersoft.studio.field.label" value="hora_pedido"/>
+        <property name="com.jaspersoft.studio.field.tree.path" value="pedido_manutencao"/>
+    </field>
+    <field name="pesquisador" class="java.lang.String">
+        <property name="com.jaspersoft.studio.field.name" value="pesquisador"/>
+        <property name="com.jaspersoft.studio.field.label" value="pesquisador"/>
+    </field>
+    <field name="laboratorio" class="java.lang.String">
+        <property name="com.jaspersoft.studio.field.name" value="laboratorio"/>
+        <property name="com.jaspersoft.studio.field.label" value="laboratorio"/>
+    </field>
+    <field name="descricao" class="java.lang.String">
+        <property name="com.jaspersoft.studio.field.name" value="descricao"/>
+        <property name="com.jaspersoft.studio.field.label" value="descricao"/>
+        <property name="com.jaspersoft.studio.field.tree.path" value="pedido_manutencao"/>
+    </field>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="80" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="35" forecolor="#2C3E50" uuid="07198ba2-9216-43b8-8094-0cfb3f9ff7ea"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="22" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Log de Incidentes e Impacto em Reservas]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="45" width="555" height="20" forecolor="#7F8C8D" uuid="5df50b92-4916-4d7a-8f55-bfa3ad7680df"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="11" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Listagem de problemas relatados e identificados através de reservas]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="72" width="555" height="1" forecolor="#BDC3C7" uuid="2a32c286-90e8-4680-bc42-f81ee307db1a"/>
+            </line>
+        </band>
+    </title>
+    <columnHeader>
+        <band height="25" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#34495E" uuid="60295804-b903-4c9f-8dbf-c0d11de4cb1b"/>
+                <graphicElement>
+                    <pen lineWidth="0.0"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="10" y="5" width="110" height="15" forecolor="#FFFFFF" uuid="d6139be6-7fa4-469b-980b-873b8858a74e"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Data do Pedido]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="130" y="5" width="130" height="15" forecolor="#FFFFFF" uuid="f00455cc-c7bc-4df1-8e01-1e967a544c9b"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Pesquisador]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="270" y="5" width="120" height="15" forecolor="#FFFFFF" uuid="fcfd3ff6-9db4-4674-88a2-972cf1e612cb"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Laboratório]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="400" y="5" width="145" height="15" forecolor="#FFFFFF" uuid="8a99ba9f-4318-4903-bb42-a08ff82a5c54"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Descrição do Defeito]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="30" splitType="Stretch">
+            <textField pattern="dd/MM/yyyy HH:mm">
+                <reportElement x="10" y="7" width="110" height="16" uuid="b5ff62db-f3fb-464a-a22c-7b2496a75f85"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{hora_pedido}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="130" y="7" width="130" height="16" uuid="e6189ef0-0588-4db0-9b48-18e404b8df2f"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{pesquisador}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="270" y="7" width="120" height="16" uuid="3d29a5fa-2849-411a-b620-11202e86bc64"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{laboratorio}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="400" y="7" width="145" height="16" uuid="bf8b9cb0-ca72-4d2b-aa90-b1ffc6de59ff"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement positionType="Float" x="0" y="27" width="555" height="1" forecolor="#ECF0F1" uuid="885eb21b-bfbb-4c28-bbbe-426b6b71c261"/>
+            </line>
+        </band>
+    </detail>
+    <pageFooter>
+        <band height="30" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="5" width="555" height="1" forecolor="#BDC3C7" uuid="a431c261-26c3-4d43-bd21-3c48f888c3a2"/>
+            </line>
+            <textField>
+                <reportElement x="400" y="10" width="120" height="15" forecolor="#7F8C8D" uuid="520cc405-3733-4bb4-bc7f-0b61d36d4df9"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de"]]></textFieldExpression>
+            </textField>
+            <textField evaluationTime="Report">
+                <reportElement x="525" y="10" width="30" height="15" forecolor="#7F8C8D" uuid="1d0e5cc2-a0c3-41bb-98a9-06b2512f45cc"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField pattern="dd/MM/yyyy HH:mm:ss">
+                <reportElement x="10" y="10" width="200" height="15" forecolor="#7F8C8D" uuid="6010bf4b-bebd-4820-a7d0-1c05d7b5bfbe"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+</jasperReport>

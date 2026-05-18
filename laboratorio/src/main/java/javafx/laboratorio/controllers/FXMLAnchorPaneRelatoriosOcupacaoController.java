@@ -47,6 +47,16 @@ public class FXMLAnchorPaneRelatoriosOcupacaoController implements Initializable
                 java.io.InputStream stream = getClass().getResourceAsStream("/relatorios/RelatorioOcupacao.jasper");
                 JasperPrint jasperPrint = JasperFillManager.fillReport(stream, parametros, connection);
                 
+                // Verifica se o relatório tem páginas (dados)
+                if (jasperPrint.getPages().isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Relatório sem Dados");
+                    alert.setHeaderText("Nenhuma reserva encontrada");
+                    alert.setContentText("O pesquisador selecionado não possui reservas registradas.");
+                    alert.show();
+                    return;
+                }
+                
                 JasperViewer viewer = new JasperViewer(jasperPrint, false);
                 viewer.setTitle("Extrato de Ocupação - " + selecionado.getNome());
                 viewer.setVisible(true);

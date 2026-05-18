@@ -74,9 +74,6 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
                 (observable, oldValue, newValue) -> selecionarItemTableViewLaboratorio(newValue));
     }
 
-    // =========================================================
-    // Carregar a TableView com dados do banco
-    // =========================================================
     public void carregarTableViewLaboratorio() {
         // Configura quais propriedades do objeto Laboratorio mapeiam para cada coluna
         tableColumnLaboratorioId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -91,9 +88,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
         tableViewLaboratorios.setItems(observableListLaboratorios);
     }
 
-    // =========================================================
     // Exibir detalhes do laboratório selecionado
-    // =========================================================
     public void selecionarItemTableViewLaboratorio(Laboratorio laboratorio) {
         if (laboratorio != null) {
             labelLaboratorioId.setText(String.valueOf(laboratorio.getId()));
@@ -111,9 +106,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
         }
     }
 
-    // =========================================================
     // Abre o Dialog de cadastro/edição
-    // =========================================================
     public boolean showFXMLAnchorPaneCadastrosLaboratoriosDialog(Laboratorio laboratorio) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(FXMLAnchorPaneCadastrosLaboratoriosController.class.getResource(
@@ -135,9 +128,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
         return controller.isButtonConfirmarClicked();
     }
 
-    // =========================================================
     // BOTÃO INSERIR
-    // =========================================================
     @FXML
     public void handleButtonInserir() throws IOException {
         Laboratorio laboratorio = new Laboratorio();
@@ -152,9 +143,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
         }
     }
 
-    // =========================================================
     // BOTÃO ALTERAR
-    // =========================================================
     @FXML
     public void handleButtonAlterar() throws IOException {
         Laboratorio laboratorio = tableViewLaboratorios.getSelectionModel().getSelectedItem();
@@ -175,9 +164,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
         }
     }
 
-    // =========================================================
     // BOTÃO REMOVER
-    // =========================================================
     @FXML
     public void handleButtonRemover() {
         Laboratorio laboratorio = tableViewLaboratorios.getSelectionModel().getSelectedItem();
@@ -197,9 +184,7 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
         }
     }
 
-    // =========================================================
     // Método auxiliar para exibir alertas de erro
-    // =========================================================
     private void exibirAlertaErro(String titulo, String mensagem) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titulo);

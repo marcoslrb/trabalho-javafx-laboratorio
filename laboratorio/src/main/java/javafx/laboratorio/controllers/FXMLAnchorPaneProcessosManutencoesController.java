@@ -8,7 +8,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -44,27 +43,26 @@ import javafx.laboratorio.services.PedidoManutencaoService;
  */
 public class FXMLAnchorPaneProcessosManutencoesController implements Initializable {
 
-    // --- Formulário de cadastro (lado esquerdo/superior) ---
+    // Formulário de cadastro (lado esquerdo/superior)
     @FXML
-    private TextField textFieldMatricula;         // Matrícula do pesquisador
+    private TextField textFieldMatricula;
     @FXML
-    private Button buttonValidarPesquisador;      // Botão "Validar Pesquisador"
+    private Button buttonValidarPesquisador;
     @FXML
-    private Label labelNomePesquisador;           // Exibe o nome após validação
+    private Label labelNomePesquisador;
 
     @FXML
-    private ComboBox<Laboratorio> comboBoxLaboratorio;  // Seleção do laboratório
+    private ComboBox<Laboratorio> comboBoxLaboratorio;
     @FXML
-    private Button buttonVerificarReserva;         // Botão "Verificar Reserva"
+    private Button buttonVerificarReserva;
     @FXML
-    private Label labelInfoReserva;               // Exibe info da reserva encontrada
+    private Label labelInfoReserva;
 
     @FXML
-    private TextArea textAreaDescricao;           // Descrição do problema
+    private TextArea textAreaDescricao;
     @FXML
-    private Button buttonRegistrarPedido;         // Botão principal de cadastro
+    private Button buttonRegistrarPedido;
 
-    // --- TableView de pedidos (parte inferior) ---
     @FXML
     private TableView<PedidoManutencao> tableViewPedidos;
     @FXML
@@ -78,15 +76,15 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
     @FXML
     private TableColumn<PedidoManutencao, String> tableColumnPedidoStatus;
 
-    // --- Botões de gerenciamento dos pedidos na tabela ---
+    // Botões de gerenciamento dos pedidos na tabela 
     @FXML
     private Button buttonMarcarResolvido;
     @FXML
-    private Button buttonAlterarPedido;   // edita descrição/status do pedido selecionado
+    private Button buttonAlterarPedido;
     @FXML
     private Button buttonRemoverPedido;   // remove o pedido selecionado
 
-    // --- Estado interno do controller ---
+    // Estado interno do controller 
     // Esses atributos guardam o estado atual da validação em andamento
     private Pesquisador pesquisadorValidado = null;   // pesquisador após RN1
     private Reserva reservaEncontrada = null;          // reserva após RN3
@@ -138,9 +136,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
                 });
     }
 
-    // =========================================================
     // PASSO 1: Validar Pesquisador (Regra de Negócio 1)
-    // =========================================================
     /**
      * Chamado ao clicar em "Validar Pesquisador".
      * Consulta o banco via Service e exibe o nome se válido.
@@ -172,9 +168,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         atualizarEstadoBotoes();
     }
 
-    // =========================================================
     // PASSO 2: Verificar Reserva (Regra de Negócio 3)
-    // =========================================================
     /**
      * Chamado ao clicar em "Verificar Reserva".
      * Verifica se há reserva nos últimos 5 dias para pesquisador + laboratório.
@@ -207,9 +201,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         atualizarEstadoBotoes();
     }
 
-    // =========================================================
     // PASSO 3: Registrar Pedido (Regras de Negócio 2, 3 e 4)
-    // =========================================================
     /**
      * Chamado ao clicar em "Registrar Pedido".
      * O Service executa internamente as RNs 1, 2, 3 e 4.
@@ -253,9 +245,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         }
     }
 
-    // =========================================================
-    // BOTÃO: Marcar Pedido como Resolvido (atalho rápido)
-    // =========================================================
+    // BOTÃO: Marcar Pedido como Resolvido 
     @FXML
     public void handleButtonMarcarResolvido() {
         PedidoManutencao pedidoSelecionado = tableViewPedidos.getSelectionModel().getSelectedItem();
@@ -275,9 +265,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         }
     }
 
-    // =========================================================
     // BOTÃO: Alterar Pedido (editar descrição e status)
-    // =========================================================
     /**
      * Abre um diálogo simples para editar a descrição e o status_resolvido
      * do pedido selecionado na tabela.
@@ -357,9 +345,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         }
     }
 
-    // =========================================================
     // BOTÃO: Remover Pedido
-    // =========================================================
     @FXML
     public void handleButtonRemoverPedido() {
         PedidoManutencao pedidoSelecionado = tableViewPedidos.getSelectionModel().getSelectedItem();
@@ -384,18 +370,14 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         }
     }
 
-    // =========================================================
     // Carregar o ComboBox de Laboratórios
-    // =========================================================
     private void carregarComboBoxLaboratorio() {
         List<Laboratorio> laboratorios = laboratorioService.listarTodos();
         ObservableList<Laboratorio> obsLabs = FXCollections.observableArrayList(laboratorios);
         comboBoxLaboratorio.setItems(obsLabs);
     }
 
-    // =========================================================
     // Carregar a TableView de Pedidos
-    // =========================================================
     private void carregarTableViewPedidos() {
         // Coluna ID: propriedade 'id' do PedidoManutencao
         tableColumnPedidoId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -436,9 +418,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         tableViewPedidos.setItems(obsList);
     }
 
-    // =========================================================
     // Atualizar estado dos botões (habilitar/desabilitar)
-    // =========================================================
     private void atualizarEstadoBotoes() {
         boolean pesquisadorOk = pesquisadorValidado != null;
         boolean labSelecionado = comboBoxLaboratorio.getSelectionModel().getSelectedItem() != null;
@@ -451,9 +431,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         buttonRegistrarPedido.setDisable(!(pesquisadorOk && reservaOk));
     }
 
-    // =========================================================
     // Limpar o formulário após cadastro bem-sucedido
-    // =========================================================
     private void limparFormulario() {
         textFieldMatricula.clear();
         labelNomePesquisador.setText("");
@@ -465,9 +443,7 @@ public class FXMLAnchorPaneProcessosManutencoesController implements Initializab
         atualizarEstadoBotoes();
     }
 
-    // =========================================================
     // Método auxiliar para alertas de erro
-    // =========================================================
     private void exibirAlertaErro(String titulo, String mensagem) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titulo);

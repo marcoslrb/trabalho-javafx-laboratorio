@@ -22,9 +22,7 @@ public class LaboratorioService {
 
     private final LaboratorioDAO laboratorioDAO = new LaboratorioDAO();
 
-    // =========================================================
     // LISTAR todos os laboratórios
-    // =========================================================
     public List<Laboratorio> listarTodos() {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -40,9 +38,7 @@ public class LaboratorioService {
         }
     }
 
-    // =========================================================
     // INSERIR laboratório com validação
-    // =========================================================
     /**
      * Valida e insere um laboratório.
      */
@@ -65,9 +61,7 @@ public class LaboratorioService {
         }
     }
 
-    // =========================================================
     // ALTERAR laboratório com validação
-    // =========================================================
     public String alterar(Laboratorio laboratorio) {
         String erro = validar(laboratorio);
         if (erro != null)
@@ -87,9 +81,7 @@ public class LaboratorioService {
         }
     }
 
-    // =========================================================
     // REMOVER laboratório
-    // =========================================================
     public boolean remover(Laboratorio laboratorio) {
         Database database = DatabaseFactory.getDatabase("postgresql");
         Connection connection = database.conectar();
@@ -105,9 +97,7 @@ public class LaboratorioService {
         }
     }
 
-    // =========================================================
     // VALIDAÇÕES de campos
-    // =========================================================
     private String validar(Laboratorio lab) {
         if (lab.getNome() == null || lab.getNome().trim().isEmpty()) {
             return "ERRO: O nome do laboratório é obrigatório.";

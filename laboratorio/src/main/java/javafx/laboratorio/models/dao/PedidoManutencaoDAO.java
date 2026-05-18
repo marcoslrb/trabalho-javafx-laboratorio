@@ -30,16 +30,14 @@ public class PedidoManutencaoDAO {
         this.connection = connection;
     }
 
-    // =========================================================
     // INSERIR um novo Pedido de Manutenção
-    // =========================================================
     /**
      * Insere o pedido de manutenção no banco.
      * A hora_pedido é gerada automaticamente pelo banco (DEFAULT CURRENT_TIMESTAMP).
      * O status_resolvido começa sempre como FALSE.
      */
     public boolean inserir(PedidoManutencao pedido) {
-        // Nota: não passamos hora_pedido nem status_resolvido pois têm DEFAULT no banco
+        // Nota: não é passado hora_pedido nem status_resolvido pois têm DEFAULT no banco
         String sql = "INSERT INTO pedido_manutencao (id_reserva, hora_pedido, descricao, status_resolvido) "
                    + "VALUES (?, NOW(), ?, FALSE)";
         try {
@@ -54,9 +52,7 @@ public class PedidoManutencaoDAO {
         }
     }
 
-    // =========================================================
     // LISTAR todos os Pedidos de Manutenção (com JOINs)
-    // =========================================================
     /**
      * Retorna todos os pedidos de manutenção, com os dados da reserva,
      * pesquisador e laboratório associados.
@@ -84,9 +80,7 @@ public class PedidoManutencaoDAO {
         return retorno;
     }
 
-    // =========================================================
-    // VERIFICAR DUPLICIDADE (Regra de Negócio 2)
-    // =========================================================
+    //  VERIFICAR DUPLICIDADE (Regra de Negócio 2)
     /**
      * Verifica se já existe um pedido de manutenção PENDENTE (status_resolvido = FALSE)
      * para o mesmo pesquisador no mesmo laboratório.
@@ -105,7 +99,7 @@ public class PedidoManutencaoDAO {
             stmt.setInt(2, idLaboratorio);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1) > 0; // true = já existe pedido pendente
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException ex) {
             System.err.println("Erro ao verificar pedido pendente: " + ex.getMessage());
@@ -113,9 +107,7 @@ public class PedidoManutencaoDAO {
         return false;
     }
 
-    // =========================================================
-    // BUSCAR RESERVA VÁLIDA (Regra de Negócio 3)
-    // =========================================================
+    // BUSCAR reserva válida (Regra de Negócio 3)
     /**
      * Busca uma reserva nos últimos 5 dias para o pesquisador + laboratório informados.
      *
@@ -123,7 +115,6 @@ public class PedidoManutencaoDAO {
      *        (teve uma reserva) nos últimos 5 dias.
      */
     public Reserva buscarReservaValida(String matriculaPesquisador, int idLaboratorio) {
-        // data_fim entre (agora - 5 dias) e agora
         String sql = "SELECT r.id, r.data_inicio, r.data_fim, r.matricula_pesquisador, r.id_laboratorio, "
                    + "p.matricula, p.nome AS nome_pesquisador, p.email, p.cpf, p.telefone, p.suspenso, "
                    + "l.id AS id_lab, l.nome AS nome_lab, l.area, l.descricao AS desc_lab, l.funcional "
@@ -177,9 +168,7 @@ public class PedidoManutencaoDAO {
         return null; // null = não existe reserva nos últimos 5 dias
     }
 
-    // =========================================================
     // BUSCAR POR ID
-    // =========================================================
     /**
      * Busca um pedido de manutenção pelo seu ID.
      */
@@ -206,9 +195,7 @@ public class PedidoManutencaoDAO {
         return null;
     }
 
-    // =========================================================
-    // ATUALIZAR STATUS DO PEDIDO
-    // =========================================================
+    // ATUALIZAR status do pedido para resolvido (Regra de Negócio 4)
     /**
      * Marca um pedido de manutenção como resolvido (status_resolvido = TRUE).
      * Só atualiza se o pedido ainda estiver pendente (status_resolvido = FALSE).
@@ -226,9 +213,7 @@ public class PedidoManutencaoDAO {
         }
     }
 
-    // =========================================================
     // ALTERAR descrição e/ou status de um Pedido de Manutenção
-    // =========================================================
     /**
      * Edita a descrição e o status_resolvido de um pedido existente.
      */
@@ -247,9 +232,7 @@ public class PedidoManutencaoDAO {
         }
     }
 
-    // =========================================================
     // REMOVER um Pedido de Manutenção
-    // =========================================================
     /**
      * Remove um pedido de manutenção pelo seu ID.
      */
@@ -266,9 +249,6 @@ public class PedidoManutencaoDAO {
         }
     }
 
-    // =========================================================
-    // OBTER DADOS PARA GRÁFICO DE CONFIABILIDADE
-    // =========================================================
     /**
      * Busca a quantidade de pedidos de manutenção pendentes por laboratório.
      * Retorna um Map onde a chave é o nome do laboratório e o valor é o total de falhas.
@@ -294,9 +274,7 @@ public class PedidoManutencaoDAO {
         return retorno;
     }
 
-    // =========================================================
     // MÉTODO PRIVADO AUXILIAR: mapear ResultSet -> PedidoManutencao
-    // =========================================================
     /**
      * Converte uma linha do ResultSet em um objeto PedidoManutencao completo.
      * Usado internamente para evitar repetição de código.
