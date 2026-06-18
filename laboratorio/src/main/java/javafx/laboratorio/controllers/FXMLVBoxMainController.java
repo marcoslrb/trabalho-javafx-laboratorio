@@ -91,4 +91,10 @@ public class FXMLVBoxMainController implements Initializable {
         carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneRelatoriosOcupacao.fxml");
         alterarTituloJanela("Relatório - Extrato de Ocupação");
     }
+
+    @FXML
+    public void handleMenuItemMuralAvisos() throws IOException {
+        carregarTelaNoCentro("/javafx/laboratorio/views/FXMLAnchorPaneMuralAvisos.fxml");
+        alterarTituloJanela("Mural de Avisos");
+    }
 }

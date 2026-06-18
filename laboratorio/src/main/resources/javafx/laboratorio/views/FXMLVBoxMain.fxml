@@ -36,6 +36,11 @@
               <MenuItem fx:id="menuItemRelatoriosIncidentes" mnemonicParsing="false" onAction="#handleMenuItemRelatoriosIncidentes" text="Log de Incidentes em Reservas" />
             </items>
           </Menu>
+          <Menu mnemonicParsing="false" text="Mural de Avisos">
+             <items>
+               <MenuItem fx:id="menuItemMuralAvisos" mnemonicParsing="false" onAction="#handleMenuItemMuralAvisos" text="Mural de Avisos (Sockets)" />
+             </items>
+          </Menu>
         </menus>
       </MenuBar>
       <AnchorPane fx:id="anchorPane" VBox.vgrow="ALWAYS">

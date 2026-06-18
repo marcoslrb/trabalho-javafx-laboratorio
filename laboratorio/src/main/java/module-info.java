@@ -9,6 +9,7 @@ module javafx.laboratorio {
     opens javafx.laboratorio to javafx.fxml;
     opens javafx.laboratorio.controllers to javafx.fxml;
     opens javafx.laboratorio.models.domain to javafx.base;
+    opens sockets.thread to javafx.base;
 
     exports javafx.laboratorio;
     exports javafx.laboratorio.services;
