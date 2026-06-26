@@ -59,7 +59,7 @@ CREATE TABLE pedido_manutencao (
 );
 
 -- ===========================================================
--- DADOS DE EXEMPLO (mínimo 2 registros por tabela)
+-- DADOS DE EXEMPLO ORIGINAIS
 -- ===========================================================
 
 -- 2 pesquisadores ativos
@@ -73,21 +73,48 @@ INSERT INTO laboratorio (nome, area, descricao, funcional) VALUES
     ('Lab. Redes B',       'Redes',      'Infraestrutura de rede para experimentos.',            TRUE);
 
 -- 2 reservas — data_fim no passado recente para viabilizar pedidos de manutenção
--- Reserva 1: Ana no Lab A, terminou há 2 dias (dentro da janela de 5 dias)
--- Reserva 2: Bruno no Lab B, terminou há 1 dia (dentro da janela de 5 dias)
 INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
     (NOW() - INTERVAL '3 days', NOW() - INTERVAL '2 days', '20241001', 1),
     (NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day',  '20241002', 2);
 
--- 2 pedidos de manutenção
--- Pedido 1: Ana reporta problema no Lab A (pendente → lab marcado como não funcional)
--- Pedido 2: Bruno reporta problema no Lab B (já resolvido)
+-- 2 pedidos de manutenção originais
 INSERT INTO pedido_manutencao (id_reserva, hora_pedido, descricao, status_resolvido) VALUES
     (1, NOW() - INTERVAL '1 day',  'Computador da posição 5 não liga. Possível problema na fonte.', FALSE),
     (2, NOW() - INTERVAL '12 hours', 'Cabo de rede danificado no rack principal. Sem conexão.', TRUE);
 
 -- Atualiza laboratório do pedido pendente (RN4: funcional → FALSE)
 UPDATE laboratorio SET funcional = FALSE WHERE id = 1;
+
+
+-- ===========================================================
+-- DADOS EXTRAS PARA A APRESENTAÇÃO DAS REGRAS DE NEGÓCIO
+-- ===========================================================
+
+-- Criando um 3º pesquisador para testar o limite de 5 reservas
+INSERT INTO pesquisador (matricula, nome, email, cpf, telefone, suspenso) VALUES
+    ('20241003', 'Carlos Silva', 'carlos.silva@univ.br', '55544433322', '11999990003', FALSE);
+
+-- PREPARAÇÃO REGRA 1: Choque de horários
+-- Reserva para AMANHÃ (Na apresentação: tente reservar o Lab B neste mesmo horário com outro pesquisador)
+INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
+    (NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day 2 hours', '20241002', 2);
+
+-- PREPARAÇÃO REGRA 2: Limite de 5 reservas por semana
+-- Inserindo 5 reservas para o Carlos no Lab A na mesma semana
+-- Na apresentação: Faça a 6ª reserva para o Carlos no Lab A e mostre o bloqueio.
+INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
+    (NOW() - INTERVAL '1 hour', NOW(), '20241003', 1),
+    (NOW() - INTERVAL '3 hours', NOW() - INTERVAL '2 hours', '20241003', 1),
+    (NOW() - INTERVAL '5 hours', NOW() - INTERVAL '4 hours', '20241003', 1),
+    (NOW() - INTERVAL '7 hours', NOW() - INTERVAL '6 hours', '20241003', 1),
+    (NOW() - INTERVAL '9 hours', NOW() - INTERVAL '8 hours', '20241003', 1);
+
+-- PREPARAÇÃO REGRA 3: Manutenção de no máx. 5 dias atrás
+-- Reserva do Carlos que terminou há 10 dias (fora da janela permitida)
+-- Na apresentação: Tente abrir uma manutenção para o Carlos focando nessa reserva antiga e mostre o erro.
+INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
+    (NOW() - INTERVAL '11 days', NOW() - INTERVAL '10 days', '20241003', 1);
+
 
 -- ===========================================================
 -- CONSULTAS SQL ESSENCIAIS (referência e documentação)
@@ -100,16 +127,16 @@ UPDATE laboratorio SET funcional = FALSE WHERE id = 1;
 -- SELECT * FROM pesquisador WHERE matricula = ?;
 
 -- Op.3 — RN3: busca reserva válida nos últimos 5 dias
--- SELECT * FROM reserva
--- WHERE matricula_pesquisador = ? AND id_laboratorio = ?
---   AND data_fim >= NOW() - INTERVAL '5 days'
---   AND data_fim <= NOW()
+-- SELECT * FROM reserva 
+-- WHERE matricula_pesquisador = ? AND id_laboratorio = ? 
+--   AND data_fim >= NOW() - INTERVAL '5 days' 
+--   AND data_fim <= NOW() 
 -- ORDER BY data_fim DESC LIMIT 1;
 
--- Op.4 — RN2: verifica duplicidade (pedido pendente do mesmo pesquisador/lab)
+-- Op.4 — RN2: verifica duplicidade (pedido pendente do pesquisador no sistema)
 -- SELECT COUNT(*) FROM pedido_manutencao pm
 -- JOIN reserva r ON pm.id_reserva = r.id
--- WHERE r.matricula_pesquisador = ? AND r.id_laboratorio = ?
+-- WHERE r.matricula_pesquisador = ? 
 --   AND pm.status_resolvido = FALSE;
 
 -- Op.5a — RN4 (ESCRITA 1/2): registra o pedido de manutenção
