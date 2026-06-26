@@ -1,11 +1,22 @@
 ---
--- Estrutura de Banco de Dados: Gestão de Laboratórios
--- Projeto: trabalho-javafx-laboratorio
+-- ===========================================================
+-- PROJETO: GESTÃO DE LABORATÓRIOS (JavaFX)
+-- SCRIPT COMPLETO DE PREPARAÇÃO PARA APRESENTAÇÃO
+-- ===========================================================
 ---
 
 -- ===========================================================
--- 1. PESQUISADOR
+-- ZERANDO O BANCO (Garante uma execução limpa antes de apresentar)
 -- ===========================================================
+DROP TABLE IF EXISTS pedido_manutencao CASCADE;
+DROP TABLE IF EXISTS reserva CASCADE;
+DROP TABLE IF EXISTS laboratorio CASCADE;
+DROP TABLE IF EXISTS pesquisador CASCADE;
+
+-- ===========================================================
+-- 1. ESTRUTURA DE TABELAS (DDL)
+-- ===========================================================
+
 CREATE TABLE pesquisador (
     matricula VARCHAR(8) PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -15,10 +26,6 @@ CREATE TABLE pesquisador (
     suspenso BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- ===========================================================
--- 2. LABORATORIO
--- 'funcional' muda para FALSE quando um pedido de manutenção é aberto.
--- ===========================================================
 CREATE TABLE laboratorio (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -27,9 +34,6 @@ CREATE TABLE laboratorio (
     funcional BOOLEAN NOT NULL DEFAULT TRUE
 );
 
--- ===========================================================
--- 3. RESERVA
--- ===========================================================
 CREATE TABLE reserva (
     id SERIAL PRIMARY KEY,
     data_inicio TIMESTAMP NOT NULL,
@@ -44,9 +48,6 @@ CREATE TABLE reserva (
     CONSTRAINT chk_datas CHECK (data_fim > data_inicio)
 );
 
--- ===========================================================
--- 4. PEDIDO_MANUTENCAO
--- ===========================================================
 CREATE TABLE pedido_manutencao (
     id SERIAL PRIMARY KEY,
     id_reserva INT NOT NULL,
@@ -59,117 +60,143 @@ CREATE TABLE pedido_manutencao (
 );
 
 -- ===========================================================
--- DADOS DE EXEMPLO ORIGINAIS
+-- 2. CARGA DE DADOS RICA (Para Gráficos e Relatórios)
 -- ===========================================================
 
--- 2 pesquisadores ativos
+-- PESQUISADORES
 INSERT INTO pesquisador (matricula, nome, email, cpf, telefone, suspenso) VALUES
-    ('20241001', 'Ana Souza',  'ana.souza@univ.br',  '12345678901', '11999990001', FALSE),
-    ('20241002', 'Bruno Lima', 'bruno.lima@univ.br', '98765432100', '11999990002', FALSE);
+    ('20241001', 'Ana Souza',    'ana@univ.br',    '11111111111', '11900000001', FALSE),
+    ('20241002', 'Bruno Lima',   'bruno@univ.br',  '22222222222', '11900000002', FALSE),
+    ('20241003', 'Carlos Silva', 'carlos@univ.br', '33333333333', '11900000003', FALSE),
+    ('20241004', 'Diana Rocha',  'diana@univ.br',  '44444444444', '11900000004', FALSE);
 
--- 2 laboratórios (ambos começam como funcionais)
-INSERT INTO laboratorio (nome, area, descricao, funcional) VALUES
-    ('Lab. Informática A', 'Computação', 'Laboratório com 30 computadores para aulas práticas.', TRUE),
-    ('Lab. Redes B',       'Redes',      'Infraestrutura de rede para experimentos.',            TRUE);
+-- LABORATÓRIOS
+INSERT INTO laboratorio (id, nome, area, descricao, funcional) VALUES
+    (1, 'Lab. Informática A', 'Computação',   '30 computadores modernos.', TRUE),
+    (2, 'Lab. Redes B',       'Redes',        'Rack principal e switches Cisco.', TRUE),
+    (3, 'Lab. Química C',     'Química',      'Bancadas com exaustores industriais.', TRUE),
+    (4, 'Lab. Maker D',       'Prototipagem', 'Impressoras 3D e corte a laser.', TRUE);
 
--- 2 reservas — data_fim no passado recente para viabilizar pedidos de manutenção
-INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
-    (NOW() - INTERVAL '3 days', NOW() - INTERVAL '2 days', '20241001', 1),
-    (NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day',  '20241002', 2);
+SELECT setval('laboratorio_id_seq', (SELECT MAX(id) FROM laboratorio));
 
--- 2 pedidos de manutenção originais
+-- RESERVAS (Mistura de histórico para relatórios + bases para a apresentação)
+INSERT INTO reserva (id, data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
+    -- Histórico antigo (Popula o Extrato de Ocupação e Gráfico de Ocupação)
+    (1, NOW() - INTERVAL '20 days', NOW() - INTERVAL '19 days', '20241001', 1),
+    (2, NOW() - INTERVAL '18 days', NOW() - INTERVAL '17 days', '20241002', 2),
+    (3, NOW() - INTERVAL '15 days', NOW() - INTERVAL '14 days', '20241004', 3),
+    (4, NOW() - INTERVAL '10 days', NOW() - INTERVAL '9 days',  '20241001', 4),
+
+    -- Reservas Recentes (Permitem abertura de chamado de manutenção válido)
+    (5, NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day', '20241001', 1), -- Ana no Lab A
+    (6, NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day', '20241002', 2), -- Bruno no Lab B
+    (7, NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day', '20241004', 1), -- Diana no Lab A
+
+    -- [ARMADILHA] REGRA 1: Choque de Horários (Tente reservar o Lab B neste horário com outro pesquisador)
+    (8, NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day 2 hours', '20241004', 2),
+
+    -- [ARMADILHA] REGRA 2: Máx 5 por semana (5 reservas do Carlos no Lab A. Tente fazer a 6ª)
+    (9, NOW() - INTERVAL '1 hour', NOW(), '20241003', 1),
+    (10, NOW() - INTERVAL '3 hours', NOW() - INTERVAL '2 hours', '20241003', 1),
+    (11, NOW() - INTERVAL '5 hours', NOW() - INTERVAL '4 hours', '20241003', 1),
+    (12, NOW() - INTERVAL '7 hours', NOW() - INTERVAL '6 hours', '20241003', 1),
+    (13, NOW() - INTERVAL '9 hours', NOW() - INTERVAL '8 hours', '20241003', 1),
+
+    -- [ARMADILHA] REGRA 3: Manutenção de máx 5 dias atrás (Reserva velha do Carlos. Tente abrir chamado nela)
+    (14, NOW() - INTERVAL '15 days', NOW() - INTERVAL '14 days', '20241003', 3);
+
+SELECT setval('reserva_id_seq', (SELECT MAX(id) FROM reserva));
+
+-- MANUTENÇÕES (Log de Incidentes + Índice de Confiabilidade)
 INSERT INTO pedido_manutencao (id_reserva, hora_pedido, descricao, status_resolvido) VALUES
-    (1, NOW() - INTERVAL '1 day',  'Computador da posição 5 não liga. Possível problema na fonte.', FALSE),
-    (2, NOW() - INTERVAL '12 hours', 'Cabo de rede danificado no rack principal. Sem conexão.', TRUE);
+    -- Incidentes Antigos Resolvidos (Enchem o relatório de Log, não afetam pendentes)
+    (1, NOW() - INTERVAL '19 days', 'Tela azul no PC do professor.', TRUE),
+    (2, NOW() - INTERVAL '17 days', 'Cabo de fibra ótica rompido.', TRUE),
+    (3, NOW() - INTERVAL '14 days', 'Exaustor central travado.', TRUE),
 
--- Atualiza laboratório do pedido pendente (RN4: funcional → FALSE)
-UPDATE laboratorio SET funcional = FALSE WHERE id = 1;
+    -- Incidentes Pendentes (Formam o gráfico de confiabilidade e acionam a REGRA 4)
+    (5, NOW() - INTERVAL '12 hours', 'Computador da posição 5 não liga (Ana).', FALSE),
+    (6, NOW() - INTERVAL '10 hours', 'Switch rack 2 sem energia (Bruno).', FALSE),
+    (7, NOW() - INTERVAL '5 hours',  'Ar condicionado falhou de novo (Diana).', FALSE);
 
-
--- ===========================================================
--- DADOS EXTRAS PARA A APRESENTAÇÃO DAS REGRAS DE NEGÓCIO
--- ===========================================================
-
--- Criando um 3º pesquisador para testar o limite de 5 reservas
-INSERT INTO pesquisador (matricula, nome, email, cpf, telefone, suspenso) VALUES
-    ('20241003', 'Carlos Silva', 'carlos.silva@univ.br', '55544433322', '11999990003', FALSE);
-
--- PREPARAÇÃO REGRA 1: Choque de horários
--- Reserva para AMANHÃ (Na apresentação: tente reservar o Lab B neste mesmo horário com outro pesquisador)
-INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
-    (NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day 2 hours', '20241002', 2);
-
--- PREPARAÇÃO REGRA 2: Limite de 5 reservas por semana
--- Inserindo 5 reservas para o Carlos no Lab A na mesma semana
--- Na apresentação: Faça a 6ª reserva para o Carlos no Lab A e mostre o bloqueio.
-INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
-    (NOW() - INTERVAL '1 hour', NOW(), '20241003', 1),
-    (NOW() - INTERVAL '3 hours', NOW() - INTERVAL '2 hours', '20241003', 1),
-    (NOW() - INTERVAL '5 hours', NOW() - INTERVAL '4 hours', '20241003', 1),
-    (NOW() - INTERVAL '7 hours', NOW() - INTERVAL '6 hours', '20241003', 1),
-    (NOW() - INTERVAL '9 hours', NOW() - INTERVAL '8 hours', '20241003', 1);
-
--- PREPARAÇÃO REGRA 3: Manutenção de no máx. 5 dias atrás
--- Reserva do Carlos que terminou há 10 dias (fora da janela permitida)
--- Na apresentação: Tente abrir uma manutenção para o Carlos focando nessa reserva antiga e mostre o erro.
-INSERT INTO reserva (data_inicio, data_fim, matricula_pesquisador, id_laboratorio) VALUES
-    (NOW() - INTERVAL '11 days', NOW() - INTERVAL '10 days', '20241003', 1);
+-- Desativa os laboratórios que possuem manutenções abertas
+UPDATE laboratorio SET funcional = FALSE WHERE id IN (1, 2);
 
 
 -- ===========================================================
--- CONSULTAS SQL ESSENCIAIS (referência e documentação)
+-- 3. CONSULTAS PARA O JAVA (Seu DAO deve executar estas strings)
 -- ===========================================================
 
--- Op.1 — RN1: valida pesquisador (existe e não está suspenso)
--- SELECT COUNT(*) FROM pesquisador WHERE matricula = ? AND suspenso = FALSE;
+/*
+--- GRÁFICO 1: ÍNDICE DE CONFIABILIDADE (Falhas Pendentes por Lab) ---
+-- O uso do LEFT JOIN garante que Labs sem problemas (como o Maker D) apareçam com valor 0.
+SELECT 
+    l.nome, 
+    COUNT(pm.id) AS falhas_pendentes
+FROM laboratorio l
+LEFT JOIN reserva r ON r.id_laboratorio = l.id
+LEFT JOIN pedido_manutencao pm ON pm.id_reserva = r.id AND pm.status_resolvido = FALSE
+GROUP BY l.nome
+ORDER BY falhas_pendentes DESC, l.nome ASC;
 
--- Op.2 — RN1: busca dados completos do pesquisador validado
--- SELECT * FROM pesquisador WHERE matricula = ?;
+--- GRÁFICO 2: OCUPAÇÃO GERAL DOS LABORATÓRIOS ---
+SELECT 
+    l.nome AS nome_laboratorio, 
+    COUNT(r.id) AS total_reservas
+FROM laboratorio l
+LEFT JOIN reserva r ON r.id_laboratorio = l.id
+GROUP BY l.nome
+ORDER BY total_reservas DESC;
 
--- Op.3 — RN3: busca reserva válida nos últimos 5 dias
--- SELECT * FROM reserva 
--- WHERE matricula_pesquisador = ? AND id_laboratorio = ? 
---   AND data_fim >= NOW() - INTERVAL '5 days' 
---   AND data_fim <= NOW() 
--- ORDER BY data_fim DESC LIMIT 1;
+--- RELATÓRIO 1: EXTRATO DE OCUPAÇÃO POR PESQUISADOR ---
+-- Passe a matrícula no lugar de '?'
+SELECT 
+    r.data_inicio, 
+    r.data_fim, 
+    l.nome AS nome_laboratorio
+FROM reserva r 
+JOIN laboratorio l ON r.id_laboratorio = l.id
+WHERE r.matricula_pesquisador = ? 
+ORDER BY r.data_inicio DESC;
 
--- Op.4 — RN2: verifica duplicidade (pedido pendente do pesquisador no sistema)
--- SELECT COUNT(*) FROM pedido_manutencao pm
--- JOIN reserva r ON pm.id_reserva = r.id
--- WHERE r.matricula_pesquisador = ? 
---   AND pm.status_resolvido = FALSE;
+--- RELATÓRIO 2: LOG DE INCIDENTES ---
+SELECT 
+    pm.hora_pedido, 
+    p.nome AS pesquisador, 
+    l.nome AS laboratorio, 
+    pm.descricao,
+    CASE WHEN pm.status_resolvido THEN 'Resolvido' ELSE 'Pendente' END AS status
+FROM pedido_manutencao pm
+JOIN reserva r ON pm.id_reserva = r.id
+JOIN pesquisador p ON r.matricula_pesquisador = p.matricula
+JOIN laboratorio l ON r.id_laboratorio = l.id
+ORDER BY pm.hora_pedido DESC;
 
--- Op.5a — RN4 (ESCRITA 1/2): registra o pedido de manutenção
--- INSERT INTO pedido_manutencao (id_reserva, hora_pedido, descricao, status_resolvido)
--- VALUES (?, NOW(), ?, FALSE);
 
--- Op.5b — RN4 (ESCRITA 2/2): desativa o laboratório
--- UPDATE laboratorio SET funcional = FALSE WHERE id = ?;
+-- ===========================================================
+-- AS 4 REGRAS DE NEGÓCIO (Validações ANTES do Insert no Java)
+-- ===========================================================
 
--- Nota: Op.5a e Op.5b são executadas dentro de uma transação JDBC:
---   connection.setAutoCommit(false);
---   -- executa insert
---   -- executa update
---   connection.commit();   -- confirma ambas se tudo deu certo
---   -- ou connection.rollback() se qualquer uma falhar
+-- REGRA 1 (Choque de Horários): Antes de agendar, garanta que retorne 0.
+-- ? = id do lab, ? = data fim desejada, ? = data inicio desejada
+SELECT COUNT(*) FROM reserva 
+WHERE id_laboratorio = ? 
+  AND data_inicio < ? AND data_fim > ?;
 
--- Relatório 1: Extrato de Ocupação por Pesquisador
--- SELECT r.data_inicio, r.data_fim, l.nome AS nome_laboratorio, COUNT(r.id) OVER() AS total_registros
--- FROM reserva r JOIN laboratorio l ON r.id_laboratorio = l.id
--- WHERE r.matricula_pesquisador = $P{p_matricula};
+-- REGRA 2 (Máx 5 por semana): Garanta que retorne < 5
+SELECT COUNT(*) FROM reserva 
+WHERE matricula_pesquisador = ? 
+  AND id_laboratorio = ? 
+  AND data_inicio >= NOW() - INTERVAL '7 days'; 
 
--- Relatório 2: Log de Incidentes
--- SELECT pm.hora_pedido, p.nome AS pesquisador, l.nome AS laboratorio, pm.descricao
--- FROM pedido_manutencao pm
--- JOIN reserva r ON pm.id_reserva = r.id
--- JOIN pesquisador p ON r.matricula_pesquisador = p.matricula
--- JOIN laboratorio l ON r.id_laboratorio = l.id;
+-- REGRA 3 (Manutenção com reserva nos últimos 5 dias): Deve retornar 1 registro
+SELECT * FROM reserva 
+WHERE matricula_pesquisador = ? AND id_laboratorio = ? 
+  AND data_fim >= NOW() - INTERVAL '5 days' AND data_fim <= NOW() 
+ORDER BY data_fim DESC LIMIT 1;
 
--- Gráfico: Índice de Confiabilidade (laboratórios x total de falhas)
--- SELECT l.nome, COUNT(pm.id) AS total_falhas
--- FROM laboratorio l
--- JOIN reserva r ON r.id_laboratorio = l.id
--- JOIN pedido_manutencao pm ON pm.id_reserva = r.id
--- WHERE pm.status_resolvido = FALSE
--- GROUP BY l.nome
--- ORDER BY total_falhas DESC;
+-- REGRA 4 (Um pedido pendente por pesquisador no sistema): Garanta que retorne 0
+SELECT COUNT(*) FROM pedido_manutencao pm
+JOIN reserva r ON pm.id_reserva = r.id
+WHERE r.matricula_pesquisador = ? AND pm.status_resolvido = FALSE;
+*/
