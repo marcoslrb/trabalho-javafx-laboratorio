@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,12 +13,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import javafx.laboratorio.grpc.ConsultarPorIdRequest;
+import javafx.laboratorio.grpc.ConsultarPorIdResponse;
+import javafx.laboratorio.grpc.LaboratorioServiceGrpc;
 import javafx.laboratorio.models.domain.Laboratorio;
 import javafx.laboratorio.services.LaboratorioService;
 
@@ -53,6 +64,22 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
     private Label labelLaboratorioDescricao;
     @FXML
     private Label labelLaboratorioFuncional;
+
+    // --- Consulta via gRPC (componentes novos da tela) ---
+    @FXML
+    private TextField tfId;
+    @FXML
+    private Label lblNome;
+    @FXML
+    private Label lblDepartamento;
+    @FXML
+    private Label lblCapacidade;
+    @FXML
+    private Button btnBuscar;
+
+    // --- Endereço do servidor gRPC (ajuste se o servidor estiver em outra máquina) ---
+    private static final String GRPC_HOST = "localhost";
+    private static final int GRPC_PORT = 50051;
 
     // --- Listas para a TableView ---
     private List<Laboratorio> listLaboratorios;
@@ -182,6 +209,96 @@ public class FXMLAnchorPaneCadastrosLaboratoriosController implements Initializa
             exibirAlertaErro("Seleção Necessária",
                     "Por favor, selecione um laboratório na tabela para remover.");
         }
+    }
+
+    // BOTÃO BUSCAR gRPC
+    @FXML
+    public void buscarLaboratorioGrpc() {
+        // 1) Lê e valida o ID digitado no TextField
+        String texto = tfId.getText();
+        if (texto == null || texto.isBlank()) {
+            exibirAlertaErro("Consulta gRPC", "Informe o ID do laboratório.");
+            return;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(texto.trim());
+        } catch (NumberFormatException e) {
+            exibirAlertaErro("Consulta gRPC", "ID inválido: digite um número inteiro.");
+            return;
+        }
+
+        // 2) Desabilita o botão para evitar cliques duplicados durante a chamada
+        btnBuscar.setDisable(true);
+
+        // 3) Executa a chamada gRPC bloqueante em uma thread separada:
+        //    a FX Application Thread não pode ser bloqueada, senão a UI trava
+        Thread worker = new Thread(() -> {
+            // Obs.: ManagedChannel NAO implementa AutoCloseable,
+            // entao usamos try/finally com shutdownNow() explicito
+            ManagedChannel channel = ManagedChannelBuilder
+                    .forAddress(GRPC_HOST, GRPC_PORT)
+                    .usePlaintext() // sem TLS (ambiente local)
+                    .build();
+
+            try {
+                // Stub bloqueante: consultarPorId() só retorna quando a resposta chega
+                LaboratorioServiceGrpc.LaboratorioServiceBlockingStub stub =
+                        LaboratorioServiceGrpc.newBlockingStub(channel);
+
+                ConsultarPorIdRequest request =
+                        ConsultarPorIdRequest.newBuilder()
+                                .setId(id)
+                                .build();
+
+                // Chamada síncrona com deadline, para nunca ficar pendurada
+                ConsultarPorIdResponse response = stub
+                        .withDeadlineAfter(5, TimeUnit.SECONDS)
+                        .consultarPorId(request);
+
+                final String nome = response.getNome();
+                final String departamento = response.getDepartamento();
+                final int capacidade = response.getCapacidade();
+
+                // 4) Atualiza os Labels de volta na thread da UI (obrigatório no JavaFX)
+                Platform.runLater(() -> {
+                    lblNome.setText(nome);
+                    lblDepartamento.setText(departamento);
+                    lblCapacidade.setText(String.valueOf(capacidade));
+                });
+
+            } catch (StatusRuntimeException e) {
+                // Erro de status retornado pelo servidor gRPC
+                Status status = e.getStatus();
+                if (status.getCode() == Status.Code.NOT_FOUND) {
+                    // ID não encontrado (caso tratado no servidor)
+                    Platform.runLater(() -> {
+                        lblNome.setText("Não encontrado");
+                        lblDepartamento.setText("-");
+                        lblCapacidade.setText("-");
+                    });
+                } else {
+                    // INTERNAL (falha no banco) ou qualquer outro código
+                    Platform.runLater(() -> exibirAlertaErro(
+                            "Erro gRPC", status.getDescription()));
+                }
+            } catch (Exception e) {
+                // Falha de rede, timeout, servidor indisponível, etc.
+                Platform.runLater(() -> exibirAlertaErro(
+                        "Falha gRPC", "Não foi possível comunicar com o servidor gRPC: "
+                        + e.getMessage()));
+            } finally {
+                // Fecha o canal gRPC (descarta conexoes e RPCs em andamento)
+                channel.shutdownNow();
+
+                // Sempre reabilita o botão, de volta na thread da UI
+                Platform.runLater(() -> btnBuscar.setDisable(false));
+            }
+        }, "grpc-lab-search");
+
+        worker.setDaemon(true); // não impede o JVM de encerrar quando a aplicação fechar
+        worker.start();
     }
 
     // Método auxiliar para exibir alertas de erro

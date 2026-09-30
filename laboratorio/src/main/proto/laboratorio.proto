@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+// Pacote lógico das mensagens e do serviço
+package laboratorio;
+
+// Opções de geração para Java (classes geradas pelo protobuf-maven-plugin)
+option java_package = "javafx.laboratorio.grpc";
+option java_multiple_files = true;
+
+// Mensagem de entrada: somente o ID do laboratório
+message ConsultarPorIdRequest {
+  int32 id = 1;
+}
+
+// Mensagem de saída: dados do laboratório
+// Obs.: o caso de ID não encontrado é tratado pelo código de status gRPC
+// NOT_FOUND (retornado pelo servidor), e não por um campo extra aqui.
+message ConsultarPorIdResponse {
+  string nome = 1;
+  string departamento = 2;
+  int32 capacidade = 3;
+}
+
+// Serviço exposto pelo servidor Python
+service LaboratorioService {
+  // RPC unário: recebe o ID e retorna os dados do laboratório
+  rpc ConsultarPorId (ConsultarPorIdRequest) returns (ConsultarPorIdResponse);
+}
