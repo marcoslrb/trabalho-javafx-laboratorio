@@ -10,6 +10,10 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
+### VSCODE ###
+.vscode/
+.vscode/settings.json
+
 ### ECLIPSE ###
 .project
 .classpath

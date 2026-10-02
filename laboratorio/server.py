@@ -6,14 +6,20 @@ import psycopg2
 import laboratorio_pb2
 import laboratorio_pb2_grpc
 
+import os
+
 # Configuração da conexão com o banco de dados PostgreSQL
-DB_DSN = (
-    "host=127.0.0.1 "
-    "port=5432 "
-    "dbname=laboratorio "
-    "user=postgres "
-    "password=admin"
-)
+def get_db_connection():
+    env_pass = os.getenv("DB_PASSWORD")
+    candidate_passwords = [env_pass, "postgres", "admin"] if env_pass else ["postgres", "admin"]
+    for pwd in candidate_passwords:
+        try:
+            dsn = f"host=127.0.0.1 port=5432 dbname=laboratorio user=postgres password={pwd}"
+            return psycopg2.connect(dsn)
+        except psycopg2.OperationalError:
+            continue
+    raise psycopg2.OperationalError("Não foi possível autenticar no PostgreSQL com as senhas padrão.")
+
 GRPC_PORT = 50051
 
 logger = logging.getLogger("laboratorio-server")
@@ -21,7 +27,7 @@ logger = logging.getLogger("laboratorio-server")
 class LaboratorioServiceServicer(laboratorio_pb2_grpc.LaboratorioServiceServicer):
     def ConsultarPorId(self, request, context):
         try:
-            conn = psycopg2.connect(DB_DSN)
+            conn = get_db_connection()
             try:
                 cur = conn.cursor()
                 # Busca apenas as colunas que existem no banco (nome e area)

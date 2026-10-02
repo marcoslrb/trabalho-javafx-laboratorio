@@ -16,6 +16,105 @@ O sistema foi pensado para o gerenciamento de uso de laboratórios de pesquisa, 
 
 ---
 
+## Como executar pela primeira vez
+
+### Pré-requisitos
+
+- JDK 21 LTS (Eclipse Temurin ou OpenJDK 21)
+- Apache Maven
+- PostgreSQL
+- Python 3
+
+O projeto Java espera uma conexão PostgreSQL com os seguintes dados:
+
+- Host: `127.0.0.1`
+- Porta: `5432`
+- Banco: `laboratorio`
+- Usuário: `postgres`
+- Senha: `admin`
+
+Se a senha do PostgreSQL for diferente, altere-a em
+`laboratorio/src/main/java/javafx/laboratorio/models/database/DatabasePostgreSQL.java`
+e em `laboratorio/server.py`.
+
+### Preparar o banco de dados
+
+No PowerShell ou terminal, a partir da raiz do projeto:
+
+```powershell
+psql -U postgres -c "CREATE DATABASE laboratorio;"
+psql -U postgres -d laboratorio -f ".\sql\DB.sql"
+```
+
+O segundo comando executa o script `sql/DB.sql`, que cria as tabelas e insere
+os dados iniciais usados pela aplicação.
+
+### Instalar as dependências Python
+
+Entre na pasta `laboratorio` e instale as bibliotecas usadas pelo servidor
+gRPC:
+
+```powershell
+cd laboratorio
+python -m pip install grpcio grpcio-tools psycopg2-binary
+```
+
+### Iniciar o servidor gRPC
+
+Ainda dentro da pasta `laboratorio`, execute:
+
+```powershell
+python server.py
+```
+
+Mantenha esse terminal aberto. O servidor deve informar que está pronto na
+porta `50051`:
+
+```text
+Servidor gRPC pronto em [::]:50051
+```
+
+### Executar a aplicação JavaFX
+
+Abra outro terminal, entre novamente na pasta `laboratorio` e execute:
+
+```powershell
+cd laboratorio
+mvn clean javafx:run
+```
+
+A ordem de inicialização é: PostgreSQL, servidor `server.py` e aplicação
+JavaFX.
+
+---
+
+## Regenerar os stubs Python do gRPC
+
+Caso seja necessário regenerar os arquivos `laboratorio_pb2.py` e
+`laboratorio_pb2_grpc.py` a partir do arquivo
+`src/main/proto/laboratorio.proto`, instale primeiro o compilador Python:
+
+```powershell
+python -m pip install grpcio grpcio-tools
+```
+
+Depois, a partir da pasta `laboratorio`, execute:
+
+```powershell
+python -m grpc_tools.protoc -I src/main/proto --python_out=. --grpc_python_out=. src/main/proto/laboratorio.proto
+```
+
+No Linux ou macOS, o equivalente usando `python3` é:
+
+```bash
+python3 -m grpc_tools.protoc -I src/main/proto --python_out=. --grpc_python_out=. src/main/proto/laboratorio.proto
+```
+
+Esse comando sobrescreve os stubs Python existentes na pasta `laboratorio`.
+Após regenerá-los, reinicie o `server.py`.
+
+---
+
 ## Arquitetura do projeto
 
 O projeto segue os padrões solicitados no trabalho:
@@ -76,6 +175,7 @@ O projeto segue os padrões solicitados no trabalho:
 ### Validações de Interface (Tempo Real)
 
 Para melhorar a experiência do usuário e prevenir erros, todos os formulários possuem validações visuais e de bloqueio de digitação:
+
 - **TextFormatter:** Impede fisicamente a digitação de dados inválidos (ex: letras no CPF/Telefone) e bloqueia quando o limite de caracteres é atingido.
 - **PromptText e Tooltip:** Fornecem dicas visuais de preenchimento (ex: `HH:mm` para horas, `dd/MM/yyyy` para datas, limites máximos de tamanho) antes do usuário digitar.
 - **DateCell Factory:** Desabilita fisicamente a seleção de dias anteriores à data atual nos calendários (DatePickers) de reserva.
