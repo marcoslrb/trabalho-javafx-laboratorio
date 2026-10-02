@@ -13,8 +13,6 @@ message ConsultarPorIdRequest {
 }
 
 // Mensagem de saída: dados do laboratório
-// Obs.: o caso de ID não encontrado é tratado pelo código de status gRPC
-// NOT_FOUND (retornado pelo servidor), e não por um campo extra aqui.
 message ConsultarPorIdResponse {
   string nome = 1;
   string departamento = 2;

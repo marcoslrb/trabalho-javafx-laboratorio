@@ -1,12 +1,12 @@
 import logging
+import os
 from concurrent import futures
-import grpc
-import psycopg2
 
+import grpc
 import laboratorio_pb2
 import laboratorio_pb2_grpc
+import psycopg2
 
-import os
 
 # Configuração da conexão com o banco de dados PostgreSQL
 def get_db_connection():
