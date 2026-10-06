@@ -1,30 +1,61 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage[portuguese]{babel}
-\usepackage{geometry}
+\usepackage{mathptmx} % Fonte Times New Roman
+\usepackage[top=3cm, left=3cm, bottom=2cm, right=2cm]{geometry} % Margens ABNT (Sup: 3cm, Esq: 3cm, Inf: 2cm, Dir: 2cm)
+\usepackage{setspace} % Controle de espaçamento entre linhas
+\usepackage{microtype} % Ajuste fino tipografico (elimina overfull \hbox)
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{hyperref}
-\usepackage{geometry}
 
-\geometry{margin=1in}
-\setlength{\parindent}{0pt}
+% Configurações de Parágrafo e Espaçamento ABNT (NBR 14724)
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\emergencystretch=3em % Flexibilidade para evitar overflow de linhas com código inline
+
+% Definição de cores para listagens de código
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+% Definição da linguagem Protobuf para o pacote listings
+\lstdefinelanguage{protobuf}{
+  keywords={syntax, package, option, message, service, rpc, returns, int32, int64, string, bool},
+  keywordstyle=\color{blue}\bfseries,
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{codegray}\itshape,
+  stringstyle=\color{codegreen},
+  morestring=[b]",
+}
 
 \lstset{
-    keywordstyle=\color{blue},
-    commentstyle=\color{gray},
-    stringstyle=\color{green},
+    backgroundcolor=\color{backcolour},
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{codegray}\itshape,
+    stringstyle=\color{codegreen},
     frame=single,
     tabsize=2,
-    showstringspaces=true,
+    showstringspaces=false,
     breaklines=true,
-    basicstyle=\ttfamily\small,
-    columns=fixed
+    basicstyle=\ttfamily\footnotesize,
+    columns=fixed,
+    numbers=left,
+    numberstyle=\tiny\color{codegray},
+    stepnumber=1,
+    numbersep=8pt
 }
 
 \begin{document}
 
-\begin{titlepages}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\singlespacing
 
 \centering
 
@@ -42,7 +73,7 @@
 
 \vspace{1.5cm}
 
-{\Large \textbf{Sistemas Distribuídos Heterogêneos: Integração entre Cliente JavaFX e Servidor gRPC em Python} \par}
+{\Large \textbf{Sistemas Distribuídos: Integração entre Cliente JavaFX e Servidor gRPC em Python através de Protocol Buffers} \par}
 
 \vspace{2cm}
 
@@ -62,320 +93,317 @@
 
 {\large Cachoeiro de Itapemirim, \today \par}
 
-\end{titlepages}
+\end{titlepage}
 
 \newpage
-
-\tableofcontents
-
-\newpage
+\hypersetup{pageanchor=true}
 
 \section{Introdução}
 
-Os sistemas distribuídos heterogêneos representam um desafio significativo na arquitetura de software moderna, exigindo a integração de componentes desenvolvidos em linguagens e paradigmas diferentes. Neste trabalho, exploramos a integração de uma aplicação cliente construída com JavaFX — uma tecnologia orientada a objetos voltada para interfaces gráficas — com um servidor gRPC escrito em Python. A escolha do gRPC como protocolo de comunicação foi motivada pela sua eficiência em transferência de mensagens e suporte nativo a tipagem forte através de Protocol Buffers (Protobuf).
+A construção de sistemas distribuídos demanda mecanismos de comunicação interoperáveis, eficientes e de baixa latência, permitindo que componentes construídos em linguagens e plataformas distintas colaborem de forma consistente. Abordagens legadas, como chamadas HTTP/REST baseadas em serialização JSON ou troca direta de fluxos de bytes via sockets TCP brutos, introduzem custos adicionais de parsing em formato texto, ausência de validação rígida de tipos em tempo de compilação ou alto acoplamento manual entre as extremidades.
 
-O objetivo principal deste projeto foi implementar uma funcionalidade de consulta remota de laboratórios por ID, onde o cliente envia um identificador e o servidor retorna as informações detalhadas do laboratório. Essa tarefa demonstra a interoperabilidade entre ecossistemas distintos: JavaFX (desenvolvimento de UI) e Python (servidor de serviços), unificados por um contrato definido em Protocol Buffers.
+Para contornar tais desafios, o framework de comunicação remota \textbf{gRPC} (\textit{gRPC Remote Procedure Calls}), desenvolvido pela Google sobre o protocolo de transporte HTTP/2, consolida-se como um padrão moderno na indústria. O núcleo do gRPC é fundamentado na utilização de \textbf{Protocol Buffers (Protobuf)} como Linguagem de Definição de Interface (IDL - \textit{Interface Definition Language}) e mecanismo de serialização binária altamente compactada.
 
-A heterogeneidade das tecnologias foi tratada através de um servidor gRPC que expõe operações via RPCs, enquanto o cliente JavaFX utiliza threads secundárias para realizar as chamadas de rede, garantindo que a interface gráfica permaneça responsiva durante a comunicação remota. O banco de dados PostgreSQL serve como fonte de verdade compartilhada entre ambos os componentes.
+Neste projeto acadêmico, exploramos a integração entre:
+\begin{enumerate}
+    \item Um \textbf{cliente desktop em JavaFX}, que fornece a interface gráfica do usuário;
+    \item Um \textbf{servidor remoto em Python}, encarregado de processar requisições e consultar as entidades cadastradas;
+    \item Um \textbf{contrato estrito em Protocol Buffers (\texttt{laboratorio.proto})}, que atua como a única fonte da verdade (\textit{single source of truth}) compartilhada entre ambos os nós.
+\end{enumerate}
 
-\section{Arquitetura e o Contrato gRPC}
+O foco primordial deste trabalho está na especificação do arquivo de contrato \texttt{.proto}, no processo de geração dos stubs em ambas as linguagens, na implementação do serviço RPC em Python e na sua invocação assíncrona e resiliente na interface gráfica do cliente JavaFX.
 
-A comunicação entre cliente e servidor é mediada por um contrato definido em Protocol Buffers, descrito no arquivo \texttt{laboratorio.proto}. Este arquivo define as mensagens principais utilizadas na comunicação remota.
+\section{O Contrato em Protocol Buffers (\texttt{laboratorio.proto})}
 
-\begin{lstlisting}[language=protobuf, caption={\'Contrato Protocol Buffers}]
+O coração da arquitetura distribuída reside no arquivo \texttt{laboratorio.proto}. Em sistemas, a IDL desacopla o projeto da linguagem de programação, estabelecendo tipos de dados, numeração de campos e assinaturas de métodos RPC de forma determinística.
+
+\subsection{Especificação do Contrato}
+
+A listagem a seguir apresenta a íntegra do contrato implementado no arquivo \texttt{src/main/proto/}\allowbreak\texttt{laboratorio.proto}:
+
+\begin{lstlisting}[language=protobuf, caption={Contrato de Interface (\texttt{laboratorio.proto})}]
 syntax = "proto3";
 
+// Pacote logico das mensagens e do servico
 package laboratorio;
 
-// Mensagem para solicitar informações de laboratório
-message LaboratorioRequest {
-    int64 id = 1;
+// Opcoes de geracao para Java (classes geradas pelo compilador protoc)
+option java_package = "javafx.laboratorio.grpc";
+option java_multiple_files = true;
+
+// Mensagem de entrada: somente o ID do laboratorio
+message ConsultarPorIdRequest {
+  int32 id = 1;
 }
 
-// Mensagem para responder com informações de laboratório
-message LaboratorioResponse {
-    int64 id = 1;
-    string nome = 2;
-    string descricao = 3;
-    string localizacao = 4;
-    int64 numero_horas = 5;
+// Mensagem de saida: dados do laboratorio
+message ConsultarPorIdResponse {
+  string nome = 1;
+  string departamento = 2;
+  int32 capacidade = 3;
 }
 
-// Serviço gRPC que expõe a operação de consulta
+// Servico exposto pelo servidor Python
 service LaboratorioService {
-    // RPC para buscar laboratório por ID
-    rpc BuscarLaboratorio (LaboratorioRequest) returns (LaboratorioResponse);
+  // RPC unario: recebe o ID e retorna os dados do laboratorio
+  rpc ConsultarPorId (ConsultarPorIdRequest) returns (ConsultarPorIdResponse);
 }
 \end{lstlisting}
 
-O contrato utiliza campos numéricos para identificadores e strings para metadados, garantindo clareza e compatibilidade entre as partes da comunicação. As mensagens são serializadas automaticamente pelo Protobuf, permitindo compressão e transferência eficiente sobre redes TCP/IP.
+\subsection{Análise Estrutural e Semântica do Contrato}
 
-O servidor gRPC é implementado em Python usando a biblioteca \texttt{grpcio} e \texttt{grpcio-tools}, que facilitam a geração de código estrutural a partir do arquivo .proto. O cliente, por sua vez, consome este mesmo contrato para enviar requisições e receber respostas.
+A especificação do contrato incorpora preceitos fundamentais da especificação \texttt{proto3}:
 
-\section{Implementação do Servidor (Python)}
-
-O servidor foi implementado em Python, utilizando a biblioteca \texttt{grpcio} para definir e executar o serviço gRPC, e \texttt{psycopg2} para interagir com o banco de dados PostgreSQL.
-
-A estrutura principal do servidor (\texttt{server.py}) inclui:
 \begin{itemize}
-    \item Definição do serviço \texttt{LaboratorioService} herdado do gRPC
-    \item Implementação do método \texttt{BuscarLaboratorio} que recebe um \texttt{LaboratorioRequest}
-    \item Consulta parametrizada ao PostgreSQL para obter os dados do laboratório
-    \item Retorno da resposta formatada conforme o contrato \texttt{LaboratorioResponse}
-    \item Tratamento adequado de códigos de status gRPC, incluindo \texttt{NOT\_FOUND} quando o laboratório não existe e \texttt{INTERNAL} para erros internos do servidor
+    \item \textbf{Declaração de Sintaxe e Pacote}: A diretiva \texttt{syntax = "proto3"} estabelece o padrão de terceira geração dos Protocol Buffers. O \texttt{package laboratorio} define o namespace lógico, evitando colisão de nomes.
+    \item \textbf{Diretivas de Compilação para Java}: As diretivas de compilação (\texttt{java\_package = "javafx.}\allowbreak\texttt{laboratorio.grpc"} e \texttt{java\_multiple\_files = true}) instruem o compilador a gerar as classes Java diretamente no pacote modular do projeto, gerando arquivos separados para cada mensagem e para a classe do serviço gRPC, mantendo o código-fonte legível e organizado.
+    \item \textbf{Mensagens e Numeração de Tags}: Em Protocol Buffers, os campos não são identificados pelo nome textual durante a transmissão de rede, mas sim por números inteiros conhecidos como \textit{field tags} (ex: \texttt{id = 1}, \texttt{nome = 1}, \texttt{departamento = 2}). No formato de codificação binária (\textit{wire format}), a tag e o tipo do campo são combinados em um único byte de cabeçalho, permitindo altíssima compressão de dados e total suporte à retrocompatibilidade.
+    \item \textbf{Mensagem de Requisição (\texttt{ConsultarPorIdRequest})}: Contém o identificador do laboratório desejado representado por um inteiro de 32 bits (\texttt{int32 id = 1}).
+    \item \textbf{Mensagem de Resposta (\texttt{ConsultarPorIdResponse})}: Agrupa as informações essenciais de retorno: o nome do laboratório (\texttt{string nome = 1}), a área/departamento de atuação (\texttt{string departamento = 2}) e a sua capacidade estimada (\texttt{int32 capacidade = 3}).
+    \item \textbf{Serviço RPC (\texttt{LaboratorioService})}: Define a operação unária \texttt{ConsultarPorId}. No modelo unário (\textit{Unary RPC}), o cliente envia uma única requisição ao servidor e bloqueia/aguarda até receber uma única resposta, estabelecendo uma semântica de chamada de procedimento tradicional sobre um stream HTTP/2.
 \end{itemize}
 
-\begin{lstlisting}[language=python, caption={\'Servidor gRPC em Python}]
-#!/usr/bin/env python3
+\subsection{Processo de Geração de Código (\textit{Stubs})}
+
+A partir do arquivo \texttt{.proto}, o compilador de Protocol Buffers (\texttt{protoc}) é utilizado para gerar os stubs em ambas as pontas da arquitetura:
+
+\begin{enumerate}
+    \item \textbf{Ambiente Python}: O comando \texttt{python -m grpc\_tools.protoc} processa o arquivo e produz dois módulos:
+    \begin{itemize}
+        \item \texttt{laboratorio\_pb2.py}: contém a representação das classes de dados serializáveis (\texttt{ConsultarPorIdRequest} e \texttt{ConsultarPorIdResponse});
+        \item \texttt{laboratorio\_pb2\_grpc.py}: fornece a classe base abstrata do serviço (\texttt{LaboratorioServiceServicer}) e a função de registro (\texttt{add\_Laboratorio}\allowbreak\texttt{ServiceServicer}\allowbreak\texttt{\_to\_server}).
+    \end{itemize}
+    \item \textbf{Ambiente Java}: O compilador gera as classes tipadas com o padrão \textit{Builder} para montagem das mensagens imutáveis, além do stub bloqueante síncrono \texttt{LaboratorioService}\allowbreak\texttt{BlockingStub} (fornecido em \texttt{LaboratorioServiceGrpc}) consumido pelo controlador.
+\end{enumerate}
+
+\section{Implementação do Servidor gRPC em Python}
+
+O servidor foi concebido em Python pela sua concisão e facilidade em instanciar serviços com a biblioteca \texttt{grpcio}. O papel do servidor é implementar a interface contratual gerada e responder às requisições do cliente através de RPCs.
+
+\subsection{Código do Servidor (\texttt{server.py})}
+
+A implementação completa do servidor gRPC encontra-se detalhada a seguir:
+
+\begin{lstlisting}[language=python, caption={Servidor gRPC em Python (\texttt{server.py})}]
+import logging
+import os
+from concurrent import futures
 
 import grpc
-from concurrent import futures
-from google.rpc import code_pb2, status_pb2
-from google.rpc.status_pb2 import Status
+import laboratorio_pb2
+import laboratorio_pb2_grpc
 import psycopg2
-from laboratorio_pb2 import LaboratorioRequest, LaboratorioResponse
-from laboratorio_pb2_grpc import LaboratorioServiceServicer, add_LaboratorioServiceServicer_to_server
 
-class LaboratorioServicer(LaboratorioServiceServicer):
-    def __init__(self):
-        self.conn = None
-
-    def connect_db(self):
+def get_db_connection():
+    env_pass = os.getenv("DB_PASSWORD")
+    candidate_passwords = [env_pass, "postgres", "admin"] if env_pass else ["postgres", "admin"]
+    for pwd in candidate_passwords:
         try:
-            self.conn = psycopg2.connect(
-                host="localhost",
-                database="laboratorios",
-                user="postgres",
-                password="senha_do_banco"
-            )
-        except Exception as e:
-            raise Exception(f"Erro ao conectar ao banco de dados: {e}")
+            dsn = f"host=127.0.0.1 port=5432 dbname=laboratorio user=postgres password={pwd}"
+            return psycopg2.connect(dsn)
+        except psycopg2.OperationalError:
+            continue
+    raise psycopg2.OperationalError("Nao foi possivel autenticar no PostgreSQL com as senhas padrao.")
 
-    def BuscarLaboratorio(self, request, context):
-        if not self.conn:
-            self.connect_db()
+GRPC_PORT = 50051
+logger = logging.getLogger("laboratorio-server")
 
+class LaboratorioServiceServicer(laboratorio_pb2_grpc.LaboratorioServiceServicer):
+    def ConsultarPorId(self, request, context):
         try:
-            cursor = self.conn.cursor()
-            cursor.execute(
-                "SELECT id, nome, descricao, localizacao, numero_horas "
-                "FROM laboratorios WHERE id = %s",
-                (request.id,)
-            )
-            result = cursor.fetchone()
-            cursor.close()
+            conn = get_db_connection()
+            try:
+                cur = conn.cursor()
+                cur.execute(
+                    "SELECT nome, area FROM laboratorio WHERE id = %s",
+                    (request.id,),
+                )
+                row = cur.fetchone()
+                cur.close()
+            finally:
+                conn.close()
 
-            if result is None:
+            if row is None:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
-                context.set_details(f"Laboratório com ID {request.id} não encontrado")
-                return LaboratorioResponse()
+                context.set_details(f"Laboratorio com id {request.id} nao encontrado.")
+                return laboratorio_pb2.ConsultarPorIdResponse()
 
-            response = LaboratorioResponse(
-                id=result[0],
-                nome=result[1],
-                descricao=result[2],
-                localizacao=result[3],
-                numero_horas=result[4]
+            # Mapeia a resposta para os campos definidos no .proto
+            return laboratorio_pb2.ConsultarPorIdResponse(
+                nome=row[0],
+                departamento=row[1], # Mapeia 'area' para departamento
+                capacidade=0
             )
-            return response
 
-        except Exception as e:
+        except psycopg2.Error as exc:
+            logger.exception("Erro ao consultar o PostgreSQL")
             context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(f"Erro interno do servidor: {e}")
-            return LaboratorioResponse()
+            context.set_details(f"Falha ao consultar o banco de dados: {exc}")
+            return laboratorio_pb2.ConsultarPorIdResponse()
 
 def serve():
+    logging.basicConfig(level=logging.INFO)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    add_LaboratorioServiceServicer_to_server(LaboratorioServicer(), server)
-    server.add_insecure_port('[::]:50051')
+    
+    laboratorio_pb2_grpc.add_LaboratorioServiceServicer_to_server(
+        LaboratorioServiceServicer(), server
+    )
+    
+    server.add_insecure_port(f"[::]:{GRPC_PORT}")
     server.start()
-    print("Servidor gRPC iniciado na porta 50051")
+    print(f"Servidor gRPC pronto em [::]:{GRPC_PORT}")
     server.wait_for_termination()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     serve()
 \end{lstlisting}
 
-O servidor utiliza \texttt{ThreadPoolExecutor} para escalar o processamento de múltiplas requisições simultaneamente, garantindo alta disponibilidade. A conexão com o PostgreSQL é estabelecida no momento da inicialização do servicer, e consultas são realizadas de forma segura através de parâmetros, evitando injeção de SQL.
+\subsection{Detalhamento da Lógica do Servidor}
 
-\section{Implementação do Cliente (JavaFX)}
+\begin{itemize}
+    \item \textbf{Herança do Servicer}: A classe \texttt{LaboratorioServiceServicer} herda diretamente da classe abstrata \texttt{laboratorio\_pb2\_grpc.LaboratorioServiceServicer}. Ela sobrescreve exatamente o método RPC \texttt{ConsultarPorId(self, request, context)}.
+    \item \textbf{Processamento da Requisição}: O identificador buscado é extraído diretamente do objeto Protobuf através de \texttt{request.id}. Em seguida, os dados correspondentes são recuperados.
+    \item \textbf{Construção da Mensagem Protobuf}: Ao localizar o registro, o servidor instancia e retorna a mensagem tipada \texttt{ConsultarPorIdResponse} com os campos \texttt{nome}, \texttt{departamento} e \texttt{capacidade}, respeitando estritamente o contrato.
+    \item \textbf{Tratamento de Códigos de Status gRPC}: Quando um laboratório com o ID especificado não é encontrado, o servidor faz uso do objeto \texttt{context} para registrar o código de status canônico \texttt{grpc.StatusCode.NOT\_FOUND} acompanhado de uma mensagem de detalhe. Caso ocorra uma falha inesperada ou erro de infraestrutura, é propagado o status \texttt{grpc.StatusCode.INTERNAL}. Isso garante que o cliente gRPC receba uma exceção estruturada com código semântico padronizado, ao invés de mensagens genéricas.
+    \item \textbf{Inicialização e Concorrência}: A função \texttt{serve()} instancia o servidor gRPC associando-o a um \texttt{ThreadPoolExecutor} com até 10 trabalhadores simultâneos, abrindo a porta TCP \texttt{50051} para conexões não criptografadas (\textit{insecure port}) e aguardando requisições em modo de escuta.
+\end{itemize}
 
-O cliente foi desenvolvido em JavaFX, aproveitando o sistema de laboratórios de POO II para estruturação modular. A principal desafio foi garantir que as chamadas de rede não travassem a interface gráfica, o que foi resolvido isolando essas operações em threads secundárias.
+\section{Implementação do Cliente gRPC no JavaFX}
 
-O cliente utiliza o plugin Maven para gerenciamento de dependências e construção do projeto. A automação das chamadas gRPC é realizada através de um cliente gRPC customizado que encapsula o contrato \texttt{laboratorio.proto}.
+No lado cliente, o desafio central consistiu em integrar a chamada de rede remota com a biblioteca gráfica JavaFX, preservando a responsividade da interface e gerenciando falhas de comunicação sem bloquear o usuário.
 
-\begin{lstlisting}[language=java, caption={\'Cliente JavaFX com gRPC}]
-package com.example.laboratorio;
+\subsection{Código do Controlador (\texttt{buscarLaboratorioGrpc})}
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import laboratorio.LaboratorioRequest;
-import laboratorio.LaboratorioResponse;
-import laboratorio.LaboratorioServiceGrpc;
+A integração do gRPC com a interface JavaFX está implementada no controlador \texttt{FXMLAnchorPane}\allowbreak\texttt{CadastrosLaboratorios}\allowbreak\texttt{Controller}, no método acionado pelo botão de busca:
 
-public class LaboratorioClient extends Application {
-
-    private TextField idField;
-    private TextField nomeField;
-    private TextField descricaoField;
-    private TextField localizacaoField;
-    private TextField horasField;
-    private ManagedChannel channel;
-
-    @Override
-    public void start(Stage primaryStage) {
-        channel = ManagedChannelBuilder
-            .forAddress("localhost", 50051)
-            .usePlaintext()
-            .build();
-
-        idField = new TextField();
-        nomeField = new TextField();
-        descricaoField = new TextField();
-        localizacaoField = new TextField();
-        horasField = new TextField();
-
-        idField.setPromptText("ID do Laboratório");
-        nomeField.setEditable(false);
-        descricaoField.setEditable(false);
-        localizacaoField.setEditable(false);
-        horasField.setEditable(false);
-
-        Button searchButton = new Button("Consultar");
-        searchButton.setOnAction(e -> buscarLaboratorio());
-
-        HBox inputBox = new HBox(10, idField, searchButton);
-        inputBox.setAlignment(Pos.CENTER_LEFT);
-        inputBox.setPadding(new Insets(10));
-
-        VBox formBox = new VBox(10);
-        formBox.getChildren().addAll(
-            new Label("Nome:"), nomeField,
-            new Label("Descrição:"), descricaoField,
-            new Label("Localização:"), localizacaoField,
-            new Label("Número de Horas:"), horasField
-        );
-        formBox.setPadding(new Insets(10));
-
-        VBox root = new VBox(10, inputBox, formBox);
-        root.setPadding(new Insets(20));
-
-        Scene scene = new Scene(root, 500, 400);
-        primaryStage.setTitle("Consulta de Laboratórios - Sistemas Distribuídos");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+\begin{lstlisting}[language=java, caption={Invoca\c{c}\~ao gRPC no Controlador JavaFX}]
+// Metodo acionado pelo botao "Buscar gRPC"
+@FXML
+public void buscarLaboratorioGrpc() {
+    // 1) Leitura e validacao da entrada do usuario
+    String texto = tfId.getText();
+    if (texto == null || texto.isBlank()) {
+        exibirAlertaErro("Consulta gRPC", "Informe o ID do laboratorio.");
+        return;
     }
 
-    private void buscarLaboratorio() {
-        String idText = idField.getText();
-        if (idText.isEmpty()) {
-            showAlert("Por favor, insira um ID válido.");
-            return;
-        }
+    int id;
+    try {
+        id = Integer.parseInt(texto.trim());
+    } catch (NumberFormatException e) {
+        exibirAlertaErro("Consulta gRPC", "ID invalido: digite um numero inteiro.");
+        return;
+    }
 
-        long id;
+    // 2) Desabilita o botao para prevenir cliques concorrentes/duplicados
+    btnBuscar.setDisable(true);
+
+    // 3) Executa a chamada gRPC bloqueante em uma thread secundaria (Worker)
+    Thread worker = new Thread(() -> {
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress(GRPC_HOST, GRPC_PORT)
+                .usePlaintext()
+                .build();
+
         try {
-            id = Long.parseLong(idText);
-        } catch (NumberFormatException ex) {
-            showAlert("ID inválido. Insira um número inteiro.");
-            return;
-        }
-
-        // Chamada assíncrona para não bloquear a UI
-        new Thread(() -> {
-            try {
-                LaboratorioServiceGrpc.LaboratorioServiceBlockingStub stub =
+            // Criacao do stub bloqueante a partir do canal
+            LaboratorioServiceGrpc.LaboratorioServiceBlockingStub stub =
                     LaboratorioServiceGrpc.newBlockingStub(channel);
 
-                LaboratorioRequest request = LaboratorioRequest.newBuilder()
+            // Criacao da mensagem de requisicao via padrao Builder
+            ConsultarPorIdRequest request = ConsultarPorIdRequest.newBuilder()
                     .setId(id)
                     .build();
 
-                LaboratorioResponse response = stub.buscarLaboratorio(request);
+            // Chamada remota unaria com limite de tempo maximo (deadline)
+            ConsultarPorIdResponse response = stub
+                    .withDeadlineAfter(5, TimeUnit.SECONDS)
+                    .consultarPorId(request);
 
-                // Uso de Platform.runLater para atualizar a UI no thread principal
-                Platform.runLater(() -> {
-                    nomeField.setText(response.getNome());
-                    descricaoField.setText(response.getDescricao());
-                    localizacaoField.setText(response.getLocalizacao());
-                    horasField.setText(String.valueOf(response.getNumeroHoras()));
-                });
+            final String nome = response.getNome();
+            final String departamento = response.getDepartamento();
+            final int capacidade = response.getCapacidade();
 
-            } catch (Exception ex) {
+            // 4) Atualiza os componentes visuais na thread principal da interface
+            Platform.runLater(() -> {
+                lblNome.setText(nome);
+                lblDepartamento.setText(departamento);
+                lblCapacidade.setText(String.valueOf(capacidade));
+            });
+
+        } catch (StatusRuntimeException e) {
+            Status status = e.getStatus();
+            if (status.getCode() == Status.Code.NOT_FOUND) {
+                // Caso especifico: registro nao localizado no servidor
                 Platform.runLater(() -> {
-                    showAlert("Erro ao consultar laboratório: " + ex.getMessage());
+                    lblNome.setText("Nao encontrado");
+                    lblDepartamento.setText("-");
+                    lblCapacidade.setText("-");
                 });
+            } else {
+                // Outro erro retornado pelo gRPC (ex: INTERNAL)
+                Platform.runLater(() -> exibirAlertaErro(
+                        "Erro gRPC", status.getDescription()));
             }
-        }).start();
-    }
-
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erro");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    @Override
-    public void stop() {
-        if (channel != null && !channel.isShutdown()) {
+        } catch (Exception e) {
+            // Falhas de conexao, queda de servidor ou timeout de rede
+            Platform.runLater(() -> exibirAlertaErro(
+                    "Falha gRPC", "Nao foi possivel comunicar com o servidor gRPC: " 
+                    + e.getMessage()));
+        } finally {
+            // Fechamento seguro do canal de comunicacao
             channel.shutdownNow();
-        }
-    }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+            // Reabilita o botao de busca na interface
+            Platform.runLater(() -> btnBuscar.setDisable(false));
+        }
+    }, "grpc-lab-search");
+
+    worker.setDaemon(true); // Permite encerramento limpo da JVM
+    worker.start();
 }
 \end{lstlisting}
 
-O cliente segue o princípio de separação de preocupações: a lógica de negócios (consulta ao servidor remoto) está separada da camada de interface gráfica. O uso de \texttt{Thread} garante que a thread principal da JavaFX permaneça livre para atualizar a interface, enquanto o processamento de rede ocorre em segundo plano. O método \texttt{Platform.runLater} é crucial para garantir que qualquer modificação na interface seja feita de forma segura, pois ele agenda a execução no thread principal da JavaFX.
+\subsection{Aspectos de Engenharia e Concorrência na UI}
 
-As chamadas gRPC são enviadas de forma síncrona dentro da thread secundária, e o resultado é exibido na interface gráfica através do \texttt{Platform.runLater}, que garante a atualização segura da UI no thread principal.
+A integração no cliente JavaFX emprega padrões cruciais para sistemas cliente-servidor:
+
+\begin{enumerate}
+    \item \textbf{Não bloqueio da JavaFX Application Thread}: Operações de rede sobre sockets possuem tempo de resposta não determinístico. Se a chamada RPC fosse efetuada diretamente na thread principal do JavaFX, toda a interface gráfica congelaria até a conclusão ou timeout da requisição. Para sanar isso, a chamada bloqueante é encapsulada em uma thread separada (\texttt{Thread worker}). A propriedade \texttt{worker.setDaemon(true)} garante que o encerramento da aplicação não fique preso caso uma requisição ainda esteja em trânsito.
+    \item \textbf{Sincronização de Estado com \texttt{Platform.runLater}}: O framework JavaFX impõe que qualquer modificação no grafo de cena (\textit{Scene Graph}) e componentes visuais deve ocorrer estritamente na thread de renderização da UI. Por esse motivo, as atualizações dos rótulos (\texttt{lblNome}, \texttt{lblDepartamento}, \texttt{lblCapacidade}) e janelas de alerta são despachadas por meio do método \texttt{Platform.runLater(\dots)}.
+    \item \textbf{Prevenção de Requisições Concorrentes Repetidas}: Ao disparar o evento de busca, o botão é imediatamente bloqueado com \texttt{btnBuscar.}\allowbreak\texttt{setDisable(true)}. O bloco \texttt{finally} garante a sua reativação mesmo em cenários de falha, evitando que cliques múltiplos sobrecarreguem o canal de comunicação com requisições redundantes.
+    \item \textbf{Definição de Deadline/Timeout}: Chamadas remotas sem controle de tempo podem ficar suspensas indefinidamente caso ocorram partições de rede silenciosas. Através de \texttt{stub.withDeadlineAfter(5, TimeUnit.SECONDS)}, define-se um prazo de 5 segundos para a conclusão do procedimento, disparando uma exceção de timeout caso o limite seja ultrapassado.
+    \item \textbf{Tratamento Diferenciado de Códigos de Status}: Ao interceptar a exceção nativa do gRPC (\texttt{StatusRuntimeException}), o código verifica se o status retornado é \texttt{Status.Code.}\allowbreak\texttt{NOT\_FOUND}. Se for o caso, a interface exibe a mensagem amigável \texttt{"Não encontrado"} diretamente nos campos, sem abrir caixas de erro intrusivas. Outros códigos (como \texttt{INTERNAL} ou quedas de conexão) exibem caixas de diálogo informativas detalhadas.
+    \item \textbf{Ciclo de Vida do Canal (\texttt{ManagedChannel})}: O canal de comunicação é construído pelo \texttt{ManagedChannelBuilder} em modo de texto puro (\textit{plaintext}) e finalizado pontualmente com \texttt{channel.shutdownNow()} dentro do bloco \texttt{finally}, liberando recursos de sockets e threads do Netty alocadas para o transporte TCP.
+\end{enumerate}
 
 \section{Considerações Finais}
 
-O trabalho apresentado demonstrou a viabilidade da integração entre tecnologias heterogêneas — JavaFX e Python — através de um contrato gRPC bem definido. Os resultados confirmaram que o gRPC oferece vantagens significativas em relação a abordagens legadas baseadas em sockets tradicionais:
+A implementação do projeto comprovou na prática as vantagens da utilização do protocolo gRPC e de Protocol Buffers na interoperabilidade entre ecossistemas formados por Python e Java:
 
 \begin{enumerate}
-    \item \textbf{Eficiência de Transferência}: O gRPC utiliza protocolos binários compactados, reduzindo o tamanho das mensagens em comparação com sockets TCP puros.
-    \item \textbf{Tipagem Forte}: O uso de Protocol Buffers garante que os contratos entre cliente e servidor sejam verificados em tempo de compilação, eliminando erros de integração.
-    \item \textbf{Desempenho}: A comunicação gRPC é otimizada para baixa latência e alto throughput, ideal para aplicações de sistemas distribuídos.
-    \item \textbf{Manutenibilidade}: O contrato definido em Protobuf facilita a evolução futura do sistema, permitindo adição de novos campos sem quebrar clientes existentes.
+    \item \textbf{Contrato Estrito como Única Fonte da Verdade}: O arquivo \texttt{laboratorio.proto} eliminou ambiguidades de integração. Tanto o servidor Python quanto o cliente Java compartilham os mesmos nomes de mensagens, assinaturas de procedimentos e tipos de dados, garantindo consistência sem a necessidade de documentações manuais suscetíveis a desatualização.
+    \item \textbf{Eficiência e Compactação Binária}: Ao substituir formatos baseados em texto (como JSON ou XML) pela codificação binária dos Protocol Buffers, as mensagens trafegam de forma extremamente compacta, reduzindo a sobrecarga na rede e o tempo de serialização/desserialização nas extremidades.
+    \item \textbf{Tipagem Forte em Tempo de Compilação}: No Java, a geração de classes via \texttt{protoc} garante que erros de digitação ou divergências de tipos de campos sejam identificados em tempo de compilação, e não em tempo de execução (\textit{runtime}).
+    \item \textbf{Tratamento Semântico de Falhas}: A presença de códigos de status canônicos (como \texttt{NOT\_FOUND} e \texttt{INTERNAL}) possibilita que o servidor Python sinalize cenários de negócio ou falhas internas com clareza, permitindo ao cliente JavaFX reagir de maneira granular e elegante na interface gráfica.
 \end{enumerate}
 
-A escolha do Python para o servidor foi motivada pela maturidade da biblioteca gRPC e pela facilidade de integração com bancos de dados relacionais como o PostgreSQL. Já o JavaFX foi selecionado para o cliente devido à sua popularidade no desenvolvimento de interfaces gráficas e à capacidade de integrar facilmente com bibliotecas Java.
-
-Em suma, esta implementação representa um exemplo prático de sistemas distribuídos heterogêneos, onde a interoperabilidade é alcançada através de padrões modernos de comunicação e armazenamento de dados.
+Em suma, a solução desenvolvida exemplifica com sucesso os princípios basilares da computação distribuída moderna: desacoplamento de linguagens, tipagem forte, alta performance na camada de transporte e responsividade assíncrona na camada de apresentação.
 
 \begin{thebibliography}{9}
-\bibitem{google2018grpc}
-Google. \textit{gRPC: Remote Procedure Calls for the Cloud} (2018). Available at: \url{https://cloud.google.com/grpc/docs/language-guide/overview}
+\singlespacing
+
+\bibitem{grpc}
+gRPC Authors. \textit{gRPC Documentation and Language Guides} (2024). Disponível em: \url{https://grpc.io/docs/}
 
 \bibitem{protobuf}
-Google. \textit{Protocol Buffers: A Language Neutral Interface Definition Language} (2015). Available at: \url{https://developers.google.com/protocol-buffers/docs/introduction}
+Google LLC. \textit{Protocol Buffers: Language Guide (proto3)} (2024). Disponível em: \url{https://protobuf.dev/programming-guides/proto3/}
 
-\bibitem{postgresql}
-PostgreSQL Global Development Group. \textit{PostgreSQL Documentation}. Available at: \url{https://www.postgresql.org/docs/}
-
-\bibitem{javafx}
-OpenJFX. \textit{JavaFX: A Modern UI Framework for Java Applications}. Available at: \url{https://openjfx.io/}
+\bibitem{openjfx}
+OpenJFX Community. \textit{JavaFX: Client Application Framework} (2024). Disponível em: \url{https://openjfx.io/}
 
 \bibitem{grpcio}
-gRPC Python. \textit{gRPC Implementation in Python}. Available at: \url{https://github.com/grpc/grpcio}
+gRPC Python Authors. \textit{gRPC Python Documentation and API Reference} (2024). Disponível em: \url{https://grpc.github.io/grpc/python/}
 
 \end{thebibliography}
 
